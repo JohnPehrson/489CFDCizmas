@@ -18,7 +18,7 @@ function [Disout] = Dis(i,j,x,y,q,p,c,v2,v4)
 [eigenvalueout] = eigenvalueDis(c,i,j,x,y,q,face)
 
 s2east = 1/2*(switch2(i,j,v2,p,'xi')+switch2(i+1,j,v2,p,'xi'))*edgelength(i,j,x,y,'E')*eigenvalueDis(c,i,j,x,y,q,'E')*(q(i+1,j,:)-q(i,j,:));
-s2west = 
+s2west = 1/2*(switch2(i,j,v2,p,'xi')+switch2(i-1,j,v2,p,'xi'))*edgelength(i,j,x,y,'E')*eigenvalueDis(c,i,j,x,y,q,'E')*(q(i,j,:)-q(i-1,j,:));
 s2north = 
 s2south = 
 s4east = 
