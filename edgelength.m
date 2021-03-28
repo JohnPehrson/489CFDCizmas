@@ -1,10 +1,8 @@
-function [length] = edgelength(i,j,x,y,face)
+function [length] = edgelength(X_abcd,Y_abcd,face)
 %This function finds the length of the edge of a cell. There are 4 possible
 %edges to each cell, denoted by 'face' = 'N','E','S','W'
-%i and j refer to cells, not nodes
-%x and y are currently the whole matrix of node values
+%x_abcd and y_abcd are the nodes of the individual cell
 
-[X_abcd,Y_abcd] = nodes_touch_cell(i,j,x,y);
     switch face
         case 'N'  %use c and d
             length = sqrt((X_abcd(3)-X_abcd(4))^2+(Y_abcd(3)-Y_abcd(4))^2);

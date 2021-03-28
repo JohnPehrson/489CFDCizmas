@@ -14,14 +14,19 @@
 % scatter(xout(k,:),yout(k,:))
 % hold on;
 % end
+% 
+%  Startpoint = [0 0];
+%  Endpoint = [-0.1 1];
+%  direction = Endpoint - Startpoint;
+%  direction_scaled = direction/norm(direction) % vector with length 1
+% %  up =  [-direction_scaled(2),direction_scaled(1)]
+% % right = [direction_scaled(2),-direction_scaled(1)]
+% % down = [direction_scaled(2),-direction_scaled(1)]
+% left = [-direction_scaled(2),direction_scaled(1)]
 
- Startpoint = [0 0];
- Endpoint = [-0.1 1];
- direction = Endpoint - Startpoint;
- direction_scaled = direction/norm(direction) % vector with length 1
-%  up =  [-direction_scaled(2),direction_scaled(1)]
-% right = [direction_scaled(2),-direction_scaled(1)]
-% down = [direction_scaled(2),-direction_scaled(1)]
-left = [-direction_scaled(2),direction_scaled(1)]
- 
- 
+vector = [1;2;3;4];
+testmatrixstuff = 5*11*0.1*vector
+
+
+
+
