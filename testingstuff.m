@@ -1,4 +1,4 @@
-% clear all;close all;clc;
+clear all;close all;clc;
 
 % load('testgridX.mat');
 % load('testgridY.mat');
@@ -24,9 +24,14 @@
 % % down = [direction_scaled(2),-direction_scaled(1)]
 % left = [-direction_scaled(2),direction_scaled(1)]
 
-vector = [1;2;3;4];
-testmatrixstuff = 5*11*0.1*vector
+% vector = [1;2;3;4];
+% testmatrixstuff = 5*11*0.1*vector
 
-
-
+velocityvector = [1;1];
+walltan = [1;0];
+angle = acosd(dot(velocityvector/norm(velocityvector),walltan/norm(walltan)));
+if (velocityvector(2)-walltan(2))<0
+    angle = angle*-1;
+end
+vnew = [cosd(2*angle),sind(2*angle);-sind(2*angle),cosd(2*angle)]*velocityvector
 

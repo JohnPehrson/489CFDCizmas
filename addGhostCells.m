@@ -1,4 +1,4 @@
-function [node_x_output,node_y_output] = addGhostCells(nodes_x_input,nodes_y_input)
+function [nodes_x_output,nodes_y_output] = addGhostCells(nodes_x_input,nodes_y_input)
 %This function adds 2 rows/columns of ghost cells to every boundary,
 %required for the current implementation of boundary conditions
 
@@ -81,5 +81,7 @@ nodes_y_output(3:Imax-2,3:Jmax-2) = nodes_y_input;
         end
     title('Output nodes');
     grid on;
+    xlim([-1,6]);
+    ylim([-.5,1.5]);
 end
 

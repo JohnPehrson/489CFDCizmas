@@ -20,6 +20,7 @@ clear all;close all;clc;
 
 %% User-Defined Variables
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
+user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
 user_itmax = 100;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
@@ -31,18 +32,18 @@ v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
 [nodes_x_input,nodes_y_input] = LoadGrid(user_MeshQual); %no ghost nodes/cells
 
 %Modify Grid by adding Ghost cells on the boundaries
-[node_x_output,node_y_output] = addGhostCells(nodes_x_input,nodes_y_input);
+[nodes_x,nodes_y] = addGhostCells(nodes_x_input,nodes_y_input);
 
 % %% Set up Matraxies
-% %Identify the Imax and Jmax, use to setup node and cell matraxies
-% nodes_Imax = length(nodes_x_input(:,1))+4;     %the +4 is for the ghost nodes
-% nodes_Jmax = length(nodes_y_input(1,:))+4;          %the +4 is for the ghost nodes
-% cells_Imax = nodes_Imax-1;
-% cells_Jmax = nodes_Jmax-1;
-% cells_q = zeros(cells_Imax,cells_Jmax,5);
-% cells_f = cells_q;
-% cells_g = cells_q;
-% 
+%Identify the Imax and Jmax, use to setup node and cell matraxies
+nodes_Imax = length(nodes_x(:,1));     
+nodes_Jmax = length(nodes_y(1,:));     
+cells_Imax = nodes_Imax-1;
+cells_Jmax = nodes_Jmax-1;
+cells_q = NaN(cells_Imax,cells_Jmax,4);
+cells_f = cells_q;
+cells_g = cells_q;
+
 % %Setup A,R,D matraxies for cells
 % A = zeros(cells_Imax,cells_Jmax);
 % A = findAreas(nodes_x,nodes_y,cells_Imax,cells_Jmax,A); %fill out the unchanging area matrix
@@ -50,13 +51,15 @@ v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
 % %R = findResiduals(nodes_x,nodes_y,cells_f,cells_g,cells_Imax,cells_Jmax);
 % D = zeros(cells_Imax,cells_Jmax);
 % 
-% %identify the type of cells for eventual flux stuff
-% [celltype] = cellidentifier(cells_Imax,cells_Jmax);
-% 
-% %% Grid Initialization
-% 
-% %set initial conditions by filling out the q vector for every cell
-% 
+
+%% Grid Initialization
+
+%set initial conditions by filling out the q vector for every cell
+[cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    %set boundary conditions after interior initial conditions
+    [cells_q,cells_f,cells_g] = applyBottomWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax);
+    [cells_q,cells_f,cells_g] = applyUpperWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    
 % %% Iteration Loop for solving
 % 
 % %While loop that limits runtime based on tolerance and max iterations
