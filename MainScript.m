@@ -10,14 +10,6 @@ clear all;close all;clc;
 %number and mesh quality, and reports the residuals, iteration number, bump
 %forces, and mach contours for the final solution.
 
-%% To Do:
-%make ghost nodes near the input and output
-%look into LaTex
-%Write subfunctions for each value in the Dij calculation (switches,
-%lengths, eivenvalues, f(p), etc.)
-
-
-
 %% User-Defined Variables
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
@@ -59,6 +51,7 @@ cells_g = cells_q;
     %set boundary conditions after interior initial conditions
     [cells_q,cells_f,cells_g] = applyBottomWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax);
     [cells_q,cells_f,cells_g] = applyUpperWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
 % %% Iteration Loop for solving
 % 
