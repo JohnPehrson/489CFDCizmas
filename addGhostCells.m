@@ -102,14 +102,14 @@ nodes_y_output(3:Imax-2,3:Jmax-2) = nodes_y_input;
 %     title('Input nodes');
 %     grid on;
     
-    figure;
-        for k = 1:Imax
-        scatter(nodes_x_output(k,:),nodes_y_output(k,:));
-        hold on;
-        end
-    title('Output nodes');
-    grid on;
-    xlim([-1,6]);
-    ylim([-.5,1.5]);
+%     figure;
+%         for k = 1:Imax
+%         scatter(nodes_x_output(k,:),nodes_y_output(k,:));
+%         hold on;
+%         end
+%     title('Output nodes');
+%     grid on;
+%     xlim([-1,6]);
+%     ylim([-.5,1.5]);
 end
 
