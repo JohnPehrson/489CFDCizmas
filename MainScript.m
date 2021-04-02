@@ -56,7 +56,7 @@ P_resevoir = 1/user_Gamma;
     %set boundary conditions after interior initial conditions
     [cells_q,cells_f,cells_g] = applyBottomWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax);
     [cells_q,cells_f,cells_g] = applyUpperWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-    [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
 % %% Iteration Loop for solving
 % 
