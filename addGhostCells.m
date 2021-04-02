@@ -61,11 +61,39 @@ nodes_y_output(3:Imax-2,3:Jmax-2) = nodes_y_input;
         end
     end   
     
+    %% Add ghost nodes in the corners, needed for easier tecplot plotting, never used for calcs
+    
+    %bottom left
+    dx = x(4,2)-x(3,2);
+    dy = y(2,4)-y(2,3);
+    x(1:2,1:2) = x(3:4,1:2)-2*dx;
+    y(1:2,1:2) = y(1:2,3:4)-2*dy;
+    
+    %bottom right
+    dx = x(Imax-2,2)-x(Imax-3,2);
+    dy = y(Imax-2,4)-y(Imax-2,3);
+    x((Imax-1):(Imax),1:2) = x((Imax-3):(Imax-2),1:2)+2*dx;
+    y((Imax-1):(Imax),1:2) = y((Imax-1):(Imax),3:4)-2*dy;   
+    
+    %top right
+    dx = x(Imax-2,Jmax-1)-x(Imax-3,Jmax-1);
+    dy = y(Imax-2,Jmax-2)-y(Imax-2,Jmax-3);
+    x((Imax-1):(Imax),(Jmax-1):(Jmax)) = x((Imax-3):(Imax-2),(Jmax-1):(Jmax))+2*dx;
+    y((Imax-1):(Imax),(Jmax-1):(Jmax)) = y((Imax-1):(Imax),(Jmax-3):(Jmax-2))+2*dy;
+    
+    %top left
+    dx = x(4,(Jmax-1):Jmax)-x(3,(Jmax-1):Jmax);
+    dy = y(2,Jmax-2)-y(2,Jmax-3);
+    x(1:2,(Jmax-1):Jmax) = x(3:4,(Jmax-1):Jmax)-2*dx;
+    y(1:2,(Jmax-1):Jmax) = y(1:2,(Jmax-3):(Jmax-2))+2*dy;
+    
+    
+    
     nodes_x_output = x;
     nodes_y_output = y;
     
     
-    %% Plot input and output
+%% Plot input and output
 %     figure;
 %         for k = 1:Imax-4
 %         scatter(nodes_x_input(k,:),nodes_y_input(k,:));
