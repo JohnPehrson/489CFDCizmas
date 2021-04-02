@@ -60,6 +60,8 @@ P_resevoir = 1/user_Gamma;
     [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     [cells_q,cells_f,cells_g] = applyInletBC(user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
+    [cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only
+    
 %% Iteration Loop for solving
 
 %While loop that limits runtime based on tolerance and max iterations
@@ -78,6 +80,6 @@ P_resevoir = 1/user_Gamma;
 %plot residuals vs iteration number for the grid
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(nodes_x,nodes_y,cells_q,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax);
+exportDataTecplot(nodes_x,nodes_y,cells_q,cells_f,cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax);
 
 
