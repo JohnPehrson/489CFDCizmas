@@ -33,7 +33,7 @@ nodes_Imax = length(nodes_x(:,1));
 nodes_Jmax = length(nodes_y(1,:));     
 cells_Imax = nodes_Imax-1;
 cells_Jmax = nodes_Jmax-1;
-cells_q = NaN(cells_Imax,cells_Jmax,4);
+cells_q = zeros(cells_Imax,cells_Jmax,4);
 cells_f = cells_q;
 cells_g = cells_q;
 
@@ -60,26 +60,24 @@ P_resevoir = 1/user_Gamma;
     [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     [cells_q,cells_f,cells_g] = applyInletBC(user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
-% %% Iteration Loop for solving
-% 
-% %While loop that limits runtime based on tolerance and max iterations
-% 
-% %While loop iterates through time, if statements to loop through individual
-% %cells...?
-% 
-% %call function to do node logic to identify the location of the node in the
-% %grid
-% 
-% %timestep limitations?
-% 
-% 
-% %% Report Data
-% 
-% %plot residuals vs iteration number for the grid
-% 
-% %plot the forces at the bump in the x and y direction as a function of the
-% %number of points in the grid
-% 
-% %plot mach number contours
-% 
-% 
+%% Iteration Loop for solving
+
+%While loop that limits runtime based on tolerance and max iterations
+
+%While loop iterates through time, if statements to loop through individual
+%cells...?
+
+%call function to do node logic to identify the location of the node in the
+%grid
+
+%timestep limitations?
+
+
+%% Report Data
+
+%plot residuals vs iteration number for the grid
+
+%Format and export data to visualize in TecPlot
+exportDataTecplot(nodes_x,nodes_y,cells_q,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax);
+
+
