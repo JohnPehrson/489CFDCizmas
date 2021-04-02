@@ -1,4 +1,4 @@
-function [cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax)
+function [cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax)
 %This function defines the initial conditions of the flow
 %Assume 2 layers of ghost nodes
 %Using info from page 29 of my handwritten notes
@@ -7,7 +7,7 @@ rho = 1;
 alpha = 0;
 u = user_Mach*cos(alpha);
 v = user_Mach*sin(alpha);
-p = 1/user_Gamma;
+p = P_static;
 E = 1/(user_Gamma*(user_Gamma-1))+0.5*user_Mach^2;
 H = E+p;
 

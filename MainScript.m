@@ -46,12 +46,17 @@ cells_g = cells_q;
 
 %% Grid Initialization
 
+%find resulting static pressure from the desired resevoir pressure and mach
+%number
+P_resevoir = 1/user_Gamma;
+[P_static] = pressurefinder(P_resevoir,user_Mach,user_Gamma);
+
 %set initial conditions by filling out the q vector for every cell
-[cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+[cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     %set boundary conditions after interior initial conditions
     [cells_q,cells_f,cells_g] = applyBottomWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax);
     [cells_q,cells_f,cells_g] = applyUpperWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-    [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
 % %% Iteration Loop for solving
 % 
