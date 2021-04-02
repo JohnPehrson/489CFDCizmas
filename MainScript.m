@@ -12,6 +12,7 @@ clear all;close all;clc;
 
 %% User-Defined Variables
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
+user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
 user_itmax = 100;           %maximum number of iterations made when solving
@@ -57,6 +58,7 @@ P_resevoir = 1/user_Gamma;
     [cells_q,cells_f,cells_g] = applyBottomWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax);
     [cells_q,cells_f,cells_g] = applyUpperWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    [cells_q,cells_f,cells_g] = applyInletBC(user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
 % %% Iteration Loop for solving
 % 
