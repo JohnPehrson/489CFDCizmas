@@ -7,8 +7,8 @@ rho = 1;
 alpha = 0;
 u = user_Mach*cos(alpha);
 v = user_Mach*sin(alpha);
-p = P_static;
-E = 1/(user_Gamma*(user_Gamma-1))+0.5*user_Mach^2;
+p = P_static; %can forcefully set p = pstatic because we are also forcefully setting mach number
+E = p/((user_Gamma-1))+0.5*user_Mach^2;
 H = E+p;
 
 %assume that all cells have the same initial conditions
