@@ -28,7 +28,7 @@ for j = 1:cells_Jmax
         q2(cellit) = cells_q(i,j,2);
         q3(cellit) = cells_q(i,j,3);
         q4(cellit) = cells_q(i,j,4); 
-        pstatic(cellit) = cells_f(i,j,2)-cells_q(i,j,1)*cells_q(i,j,2);
+        pstatic(cellit) = cells_f(i,j,2)-((cells_q(i,j,2))^2)/cells_q(i,j,1);
         Mach(cellit) = sqrt((q2(cellit)^2+q3(cellit)^2)/(q1(cellit)^2));
         cellit = cellit+1;
     end
