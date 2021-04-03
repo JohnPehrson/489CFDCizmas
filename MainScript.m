@@ -16,10 +16,12 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 100;           %maximum number of iterations made when solving
+user_itmax = 1;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
+
+c = 1;                      %speed of sound is reference??
 
 %% Input and modify the grid
 %read node locations in from the specified grid, put into matraxies
@@ -41,8 +43,8 @@ cells_g = cells_q;
 %Setup A,R,D matraxies for cells
 A = zeros(cells_Imax,cells_Jmax);
 A = findAreas(nodes_x,nodes_y,cells_Imax,cells_Jmax,A); %fill out the unchanging area matrix
-R = zeros(cells_Imax,cells_Jmax);
-D = zeros(cells_Imax,cells_Jmax);
+R = zeros(cells_Imax,cells_Jmax,4);
+D = zeros(cells_Imax,cells_Jmax,4);
 
 %% Grid Initialization
 
@@ -55,27 +57,48 @@ P_resevoir = 1/user_Gamma;
 [cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
 %set boundary conditions after interior initial conditions
 [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-[cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only
+[cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only, used once
     
 %% Iteration Loop for solving
 
 %While loop that limits runtime based on tolerance and max iterations
-    % remember that user_itmax and user_tol define while loop exit conditions
-
-
-
-
-
-%  R = findResiduals(nodes_x,nodes_y,cells_f,cells_g,cells_Imax,cells_Jmax);
- 
- 
-%While loop iterates through time, if statements to loop through individual
-%cells...?
-
-%call function to do node logic to identify the location of the node in the
-%grid
-
-%timestep limitations?
+iterations = 0;
+residual_it = 1;    
+a_rk = [1/4,1/3,1/2,1]; %for rk loop
+while (iterations<user_itmax) && (residual_it>user_tol) 
+    residualmax = 0;
+    for i = 3:(cells_Imax-2) %loop through the interior cells in the grid
+        for j = 3:(cells_Jmax-2)
+            %freeze a q
+                q_freeze = squeeze(cells_q(i,j,:));
+            %calculate and freeze a D
+                [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
+                q5by5 = cells_q((i-2):(i+2),(j-2):(j+2),:);
+                p5by5 = cells_f((i-2):(i+2),(j-2):(j+2),2)-((cells_q((i-2):(i+2),(j-2):(j+2),2)).^2)./cells_q((i-2):(i+2),(j-2):(j+2),1);
+                D_freeze = Dis(v2,v4,c,x_abcd,y_abcd,q5by5,p5by5);
+                D(i,j,:) = D_freeze(:); %put the dissipation in a matrix for visualization
+            %get the delta_t
+                dt = 0.00001; %totally arbitrary right now
+            %grab the cell area
+                A_cell = A(i,j);
+            %calculate f and g into the rk timestep thing
+                 f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
+                 g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);                     
+            %Runge-Kutta Temporal Incrementing
+                [cells_q(i,j,:),cells_f(i,j,:),cells_g(i,j,:),cell_Res_max] = RK_time_step(user_Gamma,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW);
+            %check if residual is larger than maximum grid residual
+                if cell_Res_max>residualmax
+                residualmax = cell_Res_max;
+                end
+        end
+    end
+    
+    
+    %reapply BC
+    [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    %increase iteration count
+    iterations = iterations+1;
+end
 
 
 %% Report Data
