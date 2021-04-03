@@ -41,6 +41,6 @@ velo_central = [ucent;vcent];
             velo_adj = [uadj;vadj];
     end
 
-eigenvalueout = c+0.5*(abs(dot(velo_central,normal))+abs(velo_adj,normal));
+eigenvalueout = c+0.5*(abs(dot(velo_central,normal))+abs(dot(velo_adj,normal)));
 end
 
