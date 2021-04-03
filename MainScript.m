@@ -8,7 +8,8 @@ clear all;close all;clc;
 %This program solves the euler equations for a geometry specified using an
 %input laplace grid. The program allows the user to specify an input mach
 %number and mesh quality, and reports the residuals, iteration number, bump
-%forces, and mach contours for the final solution.
+%forces, and mach contours for the final solution. Data visualization is
+%handed off to TecPlot via a .txt file. 
 
 %% User-Defined Variables
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
@@ -37,13 +38,11 @@ cells_q = zeros(cells_Imax,cells_Jmax,4);
 cells_f = cells_q;
 cells_g = cells_q;
 
-% %Setup A,R,D matraxies for cells
-% A = zeros(cells_Imax,cells_Jmax);
-% A = findAreas(nodes_x,nodes_y,cells_Imax,cells_Jmax,A); %fill out the unchanging area matrix
-% R = zeros(cells_Imax,cells_Jmax);
-% %R = findResiduals(nodes_x,nodes_y,cells_f,cells_g,cells_Imax,cells_Jmax);
-% D = zeros(cells_Imax,cells_Jmax);
-% 
+%Setup A,R,D matraxies for cells
+A = zeros(cells_Imax,cells_Jmax);
+A = findAreas(nodes_x,nodes_y,cells_Imax,cells_Jmax,A); %fill out the unchanging area matrix
+R = zeros(cells_Imax,cells_Jmax);
+D = zeros(cells_Imax,cells_Jmax);
 
 %% Grid Initialization
 
@@ -54,18 +53,22 @@ P_resevoir = 1/user_Gamma;
 
 %set initial conditions by filling out the q vector for every cell
 [cells_q,cells_f,cells_g] = setInitialConditions(user_Mach,user_Gamma,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-    %set boundary conditions after interior initial conditions
-    [cells_q,cells_f,cells_g] = applyBottomWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax);
-    [cells_q,cells_f,cells_g] = applyUpperWallBC(nodes_x,nodes_y,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-    [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-    [cells_q,cells_f,cells_g] = applyInletBC(user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
-    
-    [cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only
+%set boundary conditions after interior initial conditions
+[cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+[cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only
     
 %% Iteration Loop for solving
 
 %While loop that limits runtime based on tolerance and max iterations
+    % remember that user_itmax and user_tol define while loop exit conditions
 
+
+
+
+
+%  R = findResiduals(nodes_x,nodes_y,cells_f,cells_g,cells_Imax,cells_Jmax);
+ 
+ 
 %While loop iterates through time, if statements to loop through individual
 %cells...?
 
