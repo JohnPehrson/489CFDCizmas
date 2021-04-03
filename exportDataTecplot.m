@@ -1,4 +1,4 @@
-function exportDataTecplot(nodes_x,nodes_y,cells_q,cells_f,cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax)
+function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,cells_q,cells_f,cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax)
 %This function takes the final results of the program and writes it to a
 %text file that can be imported into tecPlot to visualize the data
 
@@ -36,7 +36,9 @@ end
 
 
 %find and open the data file
-fileID = fopen('testTecPlot.txt','w');
+newmach = erase(num2str(user_Mach),'.');
+filetitle = ['Pehrson_P2_' newmach '_' num2str(iterations) '.txt'];
+fileID = fopen(filetitle,'w');
 
 %write to the data file
 fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","Pressure","Mach"\n');
