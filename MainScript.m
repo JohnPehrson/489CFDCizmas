@@ -12,7 +12,7 @@ clear all;close all;clc;
 %handed off to TecPlot via a .txt file. 
 
 %% User-Defined Variables
-user_Mach = 0.9;            %choose either 0.3, 0.6, or 0.9
+user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
@@ -20,7 +20,7 @@ user_itmax = 100;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
-
+CFL = 2;
 c = 1;                      %speed of sound is reference??
 
 %% Input and modify the grid
@@ -80,10 +80,10 @@ while (iterations<user_itmax) && (residual_it>user_tol)
                 p5by5 = cells_f((i-2):(i+2),(j-2):(j+2),2)-((cells_q((i-2):(i+2),(j-2):(j+2),2)).^2)./cells_q((i-2):(i+2),(j-2):(j+2),1);
                 D_freeze = Dis(v2,v4,c,x_abcd,y_abcd,q5by5,p5by5);
                 D(i,j,:) = D_freeze(:); %put the dissipation in a matrix for visualization
-            %get the delta_t
-                dt = .0001; %totally arbitrary right now
             %grab the cell area
                 A_cell = A(i,j);
+            %get the delta_t
+                [dt] = time_step(c,CFL,A_cell,x_abcd,y_abcd,q5by5(2:4,2:4,:));
             %calculate f and g into the rk timestep thing
                  f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
                  g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);                     
