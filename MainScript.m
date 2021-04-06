@@ -16,11 +16,11 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 100;           %maximum number of iterations made when solving
+user_itmax = 500;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
-CFL = 2;
+CFL = 2*sqrt(2);
 c = 1;                      %speed of sound is reference??
 
 %% Input and modify the grid

@@ -17,6 +17,6 @@ sumeigenvaluefaces = eigenvalueDis(c,x_abcd,y_abcd,q3by3,'N')*edgelength(x_abcd,
                      eigenvalueDis(c,x_abcd,y_abcd,q3by3,'W')*edgelength(x_abcd,y_abcd,'W');
 
 delta_t_max = 2*cell_area/sumeigenvaluefaces;
-delta_t = CFL*delta_t_max;
+delta_t = delta_t_max/CFL;
 end
 
