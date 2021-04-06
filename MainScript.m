@@ -16,7 +16,7 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 10;           %maximum number of iterations made when solving
+user_itmax = 100;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
@@ -43,8 +43,11 @@ cells_g = cells_q;
 %Setup A,R,D matraxies for cells
 A = zeros(cells_Imax,cells_Jmax);
 A = findAreas(nodes_x,nodes_y,cells_Imax,cells_Jmax,A); %fill out the unchanging area matrix
-R = zeros(cells_Imax,cells_Jmax,4);
-D = zeros(cells_Imax,cells_Jmax,4);
+Residual = zeros(cells_Imax,cells_Jmax,4); %used to track residuals in a single iteration
+
+%Setup Residual plotting
+meanresidual = NaN(4,user_itmax);
+maxresidual = NaN(4,user_itmax);
 
 %% Grid Initialization
 
@@ -62,13 +65,13 @@ P_resevoir = 1/user_Gamma;
 %% Iteration Loop for solving
 
 %While loop that limits runtime based on tolerance and max iterations
-iterations = 0;
+iterations = 1;
 residual_it = 1;   
 residual_vec = [];
 residualsum = 0;
 residualavg_vec = [];
 a_rk = [1/4,1/3,1/2,1]; %for rk loop
-while (iterations<user_itmax) && (residual_it>user_tol) 
+while (iterations<(user_itmax+1)) && (residual_it>user_tol) 
     residualmax = 0;
     for j = 3:(cells_Jmax-2) %loop through the interior cells in the grid
         for i = 3:(cells_Imax-2)
@@ -79,7 +82,7 @@ while (iterations<user_itmax) && (residual_it>user_tol)
                 q5by5 = cells_q((i-2):(i+2),(j-2):(j+2),:);
                 p5by5 = cells_f((i-2):(i+2),(j-2):(j+2),2)-((cells_q((i-2):(i+2),(j-2):(j+2),2)).^2)./cells_q((i-2):(i+2),(j-2):(j+2),1);
                 D_freeze = Dis(v2,v4,c,x_abcd,y_abcd,q5by5,p5by5);
-                D(i,j,:) = D_freeze(:); %put the dissipation in a matrix for visualization
+                %D(i,j,:) = D_freeze(:); %put the dissipation in a matrix for visualization
             %grab the cell area
                 A_cell = A(i,j);
             %get the delta_t
@@ -88,22 +91,16 @@ while (iterations<user_itmax) && (residual_it>user_tol)
                  f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
                  g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);                     
             %Runge-Kutta Temporal Incrementing
-                [cells_q(i,j,:),cells_f(i,j,:),cells_g(i,j,:),cell_Res] = RK_time_step(user_Gamma,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW);
-            %check if residual is larger than maximum grid residual
-                if cell_Res>residualmax
-                residualmax = cell_Res;
-                end
-            %add the cell residual to the total residual, used for mean
-            %calculations
-            residualsum = cell_Res+residualsum;
+                [cells_q(i,j,:),cells_f(i,j,:),cells_g(i,j,:),Residual(i,j,:)] = RK_time_step(user_Gamma,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW);
         end
     end
     
-    %store residual for that iteration
-    residual_vec = [residual_vec,residualmax];
-    %average the summed residual
-    residualavg = residualsum/(cells_Imax*cells_Jmax);
-    residualavg_vec = [residualavg_vec,residualavg];
+    %residual things for a single iteration
+    spani = 3:(cells_Imax-2);
+    spanj = 3:(cells_Jmax-2);
+    meanresidual(:,iterations) = [mean(mean(Residual(spani,spanj,1)));mean(mean(Residual(spani,spanj,2))); mean(mean(Residual(spani,spanj,3)));mean(mean(Residual(spani,spanj,4)))];
+    maxresidual(:,iterations) = [max(max(Residual(spani,spanj,1)));max(max(Residual(spani,spanj,2)));max(max(Residual(spani,spanj,3)));max(max(Residual(spani,spanj,4)));];
+
     %reapply BC
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     %increase iteration count
@@ -118,4 +115,24 @@ end
 %Format and export data to visualize in TecPlot
 exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,cells_q,cells_f,cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax);
 
+%% Plot Residuals
+figure;
+for i = 1:4
+plot(1:user_itmax,meanresidual(i,:),'Linewidth',2);
+hold on;
+end
+title('Mean Residuals');
+legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
+xlabel('Iteration #');
+ylabel('Mean Residual');
+
+figure;
+for i = 1:4
+plot(1:user_itmax,maxresidual(i,:),'Linewidth',2);
+hold on;
+end
+title('Max Residuals');
+legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
+xlabel('Iteration #');
+ylabel('Max Residual');
 

@@ -1,4 +1,4 @@
-function [cell_q_out,cell_f_out,cell_g_out,Resmax] = RK_time_step(user_Gamma,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW)
+function [cell_q_out,cell_f_out,cell_g_out,Res_out] = RK_time_step(user_Gamma,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW)
 %This is a modified Runge-Kutta algorithm that steps from n to n+1 (iterations)
 %This algorithm is called at a single cell at a time n, meaning that all
 %solutions should be reported only for that cell
@@ -21,6 +21,6 @@ end
 cell_q_out = q_rk(:,4);
 cell_f_out = f_cNESW(1,:)';
 cell_g_out = g_cNESW(1,:)';
-Resmax = max(max(R_rk));
+Res_out = R_rk(:,4);
 end
 
