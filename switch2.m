@@ -28,17 +28,5 @@ function [switch2out] = switch2(v2,p5by5,type,face)
             end
     end
     
-    
-    
-    
-    switch type
-        case 'xi'
-        p = p3by3(2,:);
-        switch2out = v2*(abs((p(1)-2*p(2)+p(3)))/(p(1)+2*p(2)+p(3)));
-        case 'n'
-        p = p3by3(:,2);
-        switch2out = v2*(abs((p(1)-2*p(2)+p(3)))/(p(1)+2*p(2)+p(3)));
-    end
-
 end
 
