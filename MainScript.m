@@ -19,8 +19,8 @@ user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
 user_itmax = 100;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
-v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
-CFL = 2*sqrt(2);
+v4 = 0.005;                 %[0.0001,0.01] dissipation switch fourth order
+CFL = 0.5;                  %recommended from Cizmas
 c = 1;                      %speed of sound is reference??
 plot_it = 10;               %After how many iterations do I save data for plotting? Aka, 10 means every 10 iterations I should save the data
 
@@ -92,12 +92,12 @@ while (iterations<(user_itmax+1)) && (residual_it>user_tol)
                 [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
                 q5by5 = cells_q((i-2):(i+2),(j-2):(j+2),:);
                 p5by5 = cells_f((i-2):(i+2),(j-2):(j+2),2)-((cells_q((i-2):(i+2),(j-2):(j+2),2)).^2)./cells_q((i-2):(i+2),(j-2):(j+2),1);
-                D_freeze = Dis(v2,v4,c,x_abcd,y_abcd,q5by5,p5by5);
+                D_freeze = Dis(v2,v4,user_Gamma,x_abcd,y_abcd,q5by5,p5by5);
                 %D(i,j,:) = D_freeze(:); %put the dissipation in a matrix for visualization
             %grab the cell area
                 A_cell = A(i,j);
             %get the delta_t
-                [dt] = time_step(c,CFL,A_cell,x_abcd,y_abcd,q5by5(2:4,2:4,:));
+                [dt] = time_step(user_Gamma,CFL,A_cell,x_abcd,y_abcd,q5by5(2:4,2:4,:),p5by5(2:4,2:4));
             %calculate f and g into the rk timestep thing
                  f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
                  g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);                     

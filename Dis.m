@@ -1,4 +1,4 @@
-function [Disout] = Dis(v2,v4,c,x_abcd,y_abcd,q5by5,p5by5)
+function [Disout] = Dis(v2,v4,user_Gamma,x_abcd,y_abcd,q5by5,p5by5)
 %The dissipation function finds the dissipation at a single cell using a
 %bunch of sub-functions
 %calls switches, edge lengths, eigenvalues, and q
@@ -24,17 +24,18 @@ function [Disout] = Dis(v2,v4,c,x_abcd,y_abcd,q5by5,p5by5)
 
 %define subinput
 q3by3 = q5by5(2:4,2:4,:);
+p3by3 = p5by5(2:4,2:4);
 
 %define individual terms in the dissipation
-s2east = switch2(v2,p5by5,'xi','E')*edgelength(x_abcd,y_abcd,'E')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'E')*q_opDis(q5by5,'xi',1,'E');
-s2west = switch2(v2,p5by5,'xi','W')*edgelength(x_abcd,y_abcd,'W')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'W')*q_opDis(q5by5,'xi',1,'W');
-s2north = switch2(v2,p5by5,'n','N')*edgelength(x_abcd,y_abcd,'N')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'N')*q_opDis(q5by5,'n',1,'N');
-s2south = switch2(v2,p5by5,'n','S')*edgelength(x_abcd,y_abcd,'S')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'S')*q_opDis(q5by5,'n',1,'S');
-s4east = switch4(v2,v4,p5by5,'xi','E')*edgelength(x_abcd,y_abcd,'E')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'E')*q_opDis(q5by5,'xi',3,'E');
-s4west = switch4(v2,v4,p5by5,'xi','W')*edgelength(x_abcd,y_abcd,'W')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'W')*q_opDis(q5by5,'xi',3,'W');
-s4north = switch4(v2,v4,p5by5,'n','N')*edgelength(x_abcd,y_abcd,'N')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'N')*q_opDis(q5by5,'n',3,'N');
-s4south = switch4(v2,v4,p5by5,'n','S')*edgelength(x_abcd,y_abcd,'S')*eigenvalueDis(c,x_abcd,y_abcd,q3by3,'S')*q_opDis(q5by5,'n',3,'S');
-
+s2east = switch2(v2,p5by5,'xi','E')*edgelength(x_abcd,y_abcd,'E')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'E')*q_opDis(q5by5,'xi',1,'E');
+s2west = switch2(v2,p5by5,'xi','W')*edgelength(x_abcd,y_abcd,'W')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'W')*q_opDis(q5by5,'xi',1,'W');
+s2north = switch2(v2,p5by5,'n','N')*edgelength(x_abcd,y_abcd,'N')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'N')*q_opDis(q5by5,'n',1,'N');
+s2south = switch2(v2,p5by5,'n','S')*edgelength(x_abcd,y_abcd,'S')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'S')*q_opDis(q5by5,'n',1,'S');
+s4east = switch4(v2,v4,p5by5,'xi','E')*edgelength(x_abcd,y_abcd,'E')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'E')*q_opDis(q5by5,'xi',3,'E');
+s4west = switch4(v2,v4,p5by5,'xi','W')*edgelength(x_abcd,y_abcd,'W')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'W')*q_opDis(q5by5,'xi',3,'W');
+s4north = switch4(v2,v4,p5by5,'n','N')*edgelength(x_abcd,y_abcd,'N')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'N')*q_opDis(q5by5,'n',3,'N');
+s4south = switch4(v2,v4,p5by5,'n','S')*edgelength(x_abcd,y_abcd,'S')*eigenvalueDis(user_Gamma,x_abcd,y_abcd,q3by3,p3by3,'S')*q_opDis(q5by5,'n',3,'S');
+                 
 Disout = (s2east-s2west+s2north-s2south)-(s4east-s4west+s4north-s4south);
 Disout = squeeze(Disout);
 end
