@@ -22,6 +22,7 @@ v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.005;                %[0.0001,0.01] dissipation switch fourth order
 CFL = 2*sqrt(2);
 c = 1;                      %speed of sound is reference??
+plot_it = 10;               %After how many iterations do I save data for plotting? Aka, 10 means every 10 iterations I should save the data
 
 %% Input and modify the grid
 %read node locations in from the specified grid, put into matraxies
@@ -39,6 +40,13 @@ cells_Jmax = nodes_Jmax-1;
 cells_q = zeros(cells_Imax,cells_Jmax,4);
 cells_f = cells_q;
 cells_g = cells_q;
+
+%initialize high-dimension matrixes to save q,f,g of the whole matrix that
+%I can call when plotting. Usefull for visualizing the solution in time.
+plot_it_reduced = ceil(user_itmax/plot_it);
+plot_cells_q = NaN(1+plot_it_reduced,cells_Imax,cells_Jmax,4); %The 1+plot_it_reduced is for bc, then the iterations
+plot_cells_f = plot_cells_q;
+plot_cells_g = plot_cells_q;
 
 %Setup A,R,D matraxies for cells
 A = zeros(cells_Imax,cells_Jmax);
@@ -61,7 +69,10 @@ P_resevoir = 1/user_Gamma;
 %set boundary conditions after interior initial conditions
 [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
 [cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only, used once
-    
+plot_cells_q(1,:,:,:) = cells_q; %save data for visualization
+plot_cells_f(1,:,:,:) = cells_f;
+plot_cells_g(1,:,:,:) = cells_g;
+plot_i = 2;
 %% Iteration Loop for solving
 
 %While loop that limits runtime based on tolerance and max iterations
@@ -103,6 +114,15 @@ while (iterations<(user_itmax+1)) && (residual_it>user_tol)
 
     %reapply BC
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    
+    %check to see if I should save data this iteration
+    if (iterations/plot_it)==floor(iterations/plot_it) %is it a save data iteration?
+        plot_cells_q(plot_i,:,:,:) = cells_q; %save data for visualization
+        plot_cells_f(plot_i,:,:,:) = cells_f;
+        plot_cells_g(plot_i,:,:,:) = cells_g;
+        plot_i = plot_i+1;
+    end
+    
     %increase iteration count
     iterations = iterations+1;
 end
@@ -110,10 +130,8 @@ end
 
 %% Report Data
 
-%plot residuals vs iteration number for the grid
-
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,cells_q,cells_f,cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax);
+exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,plot_it_reduced,plot_it);
 
 %% Plot Residuals
 figure;
