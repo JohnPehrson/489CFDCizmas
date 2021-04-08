@@ -13,26 +13,8 @@ function [switch4out] = switch4(v2,v4,p5by5,type,face)
 
 %face denotes the face on which the switch is being activated in the
     %dissipation function
-
-%     switch type
-%         case 'xi'         
-%             switch face
-%                 case 'E'
-%                     switch4out = max(0,v4-1/2*(switch2(v2,p5by5,type,face)));
-%                 case 'W'
-%                     switch4out = max(0,v4-1/2*(switch2(v2,p5by5,type,face)));
-%             end
-%             
-%         case 'n'
-%             switch face
-%                 case 'N'
-%                     switch4out = max(0,v4-1/2*(switch2(v2,p5by5,type,face)));
-%                 case 'S'
-%                     switch4out = max(0,v4-1/2*(switch2(v2,p5by5,type,face)));
-%             end
-%     end
-
-    switch4out = max(0,v4-1/2*(switch2(v2,p5by5,type,face)));
+    
+    switch4out = max(0,v4-switch2(v2,p5by5,type,face));
     
 end
 
