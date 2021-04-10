@@ -11,10 +11,10 @@ fileID = fopen(filetitle,'w');
 
 for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in time/iterations
   
-  %For each loop, only consider one q,f,g set of data
-  cells_q = plot_cells_q(timeloop,:,:,:);
-  cells_f = plot_cells_g(timeloop,:,:,:);
-  cells_g = plot_cells_g(timeloop,:,:,:);
+%   %For each loop, only consider one q,f,g set of data
+%   cells_q = plot_cells_q(timeloop,:,:,:);
+%   cells_f = plot_cells_g(timeloop,:,:,:);
+%   cells_g = plot_cells_g(timeloop,:,:,:);
     
     %write x,y,q1,q2,q3,q4 vectors that give the data in 1d
     x = NaN(1,nodes_Imax*nodes_Jmax);
@@ -25,6 +25,10 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
     q4 = q1;
     pstatic = q1;
     Mach = q1;
+    f1 = q1;
+    f2 = q1;
+    f3 = q1;
+    f4 = q1;
 
     nodeit = 1;
         for j = 1:nodes_Jmax
@@ -42,6 +46,10 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
                 q2(cellit) = plot_cells_q(timeloop,i,j,2);
                 q3(cellit) = plot_cells_q(timeloop,i,j,3);
                 q4(cellit) = plot_cells_q(timeloop,i,j,4);
+                f1(cellit) =  plot_cells_f(timeloop,i,j,1);
+                f2(cellit) = plot_cells_f(timeloop,i,j,2);
+                f3(cellit) = plot_cells_f(timeloop,i,j,3);
+                f4(cellit) = plot_cells_f(timeloop,i,j,4);
                 pstatic(cellit) = plot_cells_f(timeloop,i,j,2)-((plot_cells_g(timeloop,i,j,2))^2)/plot_cells_q(timeloop,i,j,1);   
                 Mach(cellit) = sqrt((q2(cellit)^2+q3(cellit)^2)/(q1(cellit)^2));
                 cellit = cellit+1;
@@ -54,8 +62,8 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
 
 
         %write to the data file
-        fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","Pressure","Mach"\n');
-        fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
+        fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","f1", "f2", "f3", "f4","Pressure","Mach"\n');
+        fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
         for i = 1:nodes_Imax*nodes_Jmax
             fprintf(fileID,'%.5g ', x(i));
         end
@@ -78,6 +86,22 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
         fprintf(fileID,'\n');
         for i = 1:cells_Imax*cells_Jmax
             fprintf(fileID,'%.5g ', q4(i));
+        end
+                fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', f1(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', f2(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', f3(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', f4(i));
         end
         fprintf(fileID,'\n');
         for i = 1:cells_Imax*cells_Jmax
