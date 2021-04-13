@@ -1,4 +1,4 @@
-function [q_b,f_b,g_b] = singleCellInletBC(user_Gamma,user_Mach,P_resevoir,alpha,q_in,f_in,g_in)
+function [q_b,f_b,g_b] = singleCellInletBC(user_Gamma,user_Mach,P_static,alpha,q_in,f_in,g_in)
 %This sub-function sets the ghost cells outside the inlet of the grid.
 %The program uses Riemann invariants, pressure, and flow AoA to find the
 %ghost cells.
@@ -7,43 +7,37 @@ function [q_b,f_b,g_b] = singleCellInletBC(user_Gamma,user_Mach,P_resevoir,alpha
 %q_in, f_in, and g_in all reference the first cell inside the wall
 %q_b, f_b, and g_b reference the TWO ghost cells that act as the boundary
 
+%Find P_tot,rho_tot in the inlet far field, use to find R1
+P_inf = P_static; % pressurefinder(user_Mach,user_Gamma,P_static);
+rho_inf = 1; %1/((1+(user_Gamma-1)/2*user_Mach^2)^(-1/(user_Gamma-1))); %assume far field rho is 1
+R1 = (2/(user_Gamma-1))*sqrt(user_Gamma*P_inf/rho_inf)+user_Mach; %Riemann invariant 1 in the farfield where there is no flow
 
-normalinlet = [-1,0]; %outward pointing normal
+%squeeze flow parameters
+q = squeeze(q_in);
+f = squeeze(f_in);
+g = squeeze(g_in);
+%Find R2, invariant from the flow field
+uflow = q(2)/q(1);
+vflow = q(3)/q(1);
+Vflowmag = sqrt(uflow^2+vflow^2);
+p = f(2)-(q(2)^2)/q(1);
+c = sqrt(user_Gamma*p/q(1));
+R2 = Vflowmag-2*c/(user_Gamma-1);
 
-%Calculate R-, referred to as R_gc (ghost cell) -data comes from ref/inlet
-P_gc = pressurefinder(P_resevoir,user_Mach,user_Gamma);
-rho_gc = 1; %by nondimensionalization
-c_gc = sqrt(user_Gamma*P_gc/rho_gc);
-V_gc = user_Mach*[cosd(alpha),sind(alpha)];
-R_gc = dot(V_gc,normalinlet)-(2*c_gc)/(user_Gamma-1);
-
-%Calculate R+, referred to as R_in (interior of the computational grid)
-%-data comes from the interior cells in q_in,f_in,g_in
-V_in = [q_in(2)/q_in(1),q_in(3)/q_in(1)];
-rho_in = q_in(1);
-P_in = pressurefinder(P_resevoir,norm(V_in),user_Gamma);
-c_in = sqrt(user_Gamma*P_in/rho_in);
-R_in = dot(V_in,normalinlet)+(2*c_in)/(user_Gamma-1);
-
-%Calculate Vb and cb
-Vb = (R_in+R_gc)/2;
-c_b = (user_Gamma-1)*(R_in-R_gc)/4;
-
-%Vb vector calculated using
-Vbvec = V_gc + (Vb-dot(V_gc,normalinlet))*normalinlet;
-u_b = Vbvec(1);
-v_b = Vbvec(2);
-
-%Finding variables to put into q,f,g boundary cells
-s_b = (c_gc^2)/(user_Gamma*rho_gc^(user_Gamma-1));
-rho_b = (c_b^2)/(user_Gamma*s_b);
-p_b = rho_b*(c_b^2)/user_Gamma;
-E_b = p_b/(rho_b*(user_Gamma-1))+0.5*Vb^2;
+%find v at inlet using riemans
+Vinletmag = 0.5*(R1+R2);
+uinlet = Vinletmag*cos(alpha);
+vinlet = Vinletmag*sin(alpha);
+cinlet = 0.25*(user_Gamma-1)*(R1-R2);
+Minlet = Vinletmag/c;
+Pinlet = P_static;
+rhoinlet = user_Gamma*Pinlet/(cinlet^2);
+Einlet = Pinlet/((user_Gamma-1)*rhoinlet)+0.5*(uinlet^2+vinlet^2);
 
 %Put variables into the q,f,g form
-q_b_cell = [rho_b;rho_b*u_b;rho_b*v_b;rho_b*E_b];
-f_b_cell = [rho_b*u_b;rho_b*u_b^2+p_b;rho_b*u_b*v_b;rho_b*(E_b+p_b)*u_b];
-g_b_cell = [rho_b*v_b;rho_b*u_b*v_b;rho_b*v_b^2+p_b;rho_b*(E_b+p_b)*v_b];
+q_b_cell = [rhoinlet;rhoinlet*uinlet;rhoinlet*vinlet;rhoinlet*Einlet];
+f_b_cell = [rhoinlet*uinlet;rhoinlet*uinlet^2+Pinlet;rhoinlet*uinlet*vinlet;rhoinlet*(Einlet+Pinlet)*uinlet];
+g_b_cell = [rhoinlet*vinlet;rhoinlet*uinlet*vinlet;rhoinlet*vinlet^2+Pinlet;rhoinlet*(Einlet+Pinlet)*vinlet];
 
 %create empty output matrixes in the right format
 q_b = NaN(2,1,4);
