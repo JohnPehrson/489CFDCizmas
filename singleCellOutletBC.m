@@ -1,4 +1,4 @@
-function [q_out,f_out,g_out] = singleCellOutletBC(gammag,q_in,f_in,g_in,P_resevoir)
+function [q_out,f_out,g_out] = singleCellOutletBC(gammag,q_in,f_in,g_in,P_resevoir,user_Mach)
 %This function sets the outlet boundary conditons in a single cell. Used in
 %"applyOutletBC".
 
@@ -18,13 +18,10 @@ rho(3) = 2*rho(2)-rho(1);
 m(3) = 2*m(2)-m(1);
 n(3) = 2*n(2)-n(1);
 
-%find flight mach number for pressure calculations
-u = m(3)/rho(3);
-v = n(3)/rho(3);
-Mach = sqrt(u^2+v^2);
-
 %find static pressure at the cell
-Pstatic_inf = pressurefinder(P_resevoir,Mach,gammag);
+Pstatic_inf = pressurefinder(P_resevoir,user_Mach,gammag);
+    %use user_Mach to find the Pstatic_inf, meaning that the pressure at
+    %the outlet will be independent of the upstream cells. 
 
 %calculate new epsilon for ghost cells
 epsilon = (Pstatic_inf)/(gammag-1)+0.5*(m(3)^2+n(3)^2)/(rho(3));
