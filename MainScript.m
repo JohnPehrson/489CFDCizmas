@@ -16,13 +16,12 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 100;           %maximum number of iterations made when solving
+user_itmax = 50;           %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
-v4 = 0.005;                 %[0.0001,0.01] dissipation switch fourth order
-CFL = 0.5;                  %recommended from Cizmas
-c = 1;                      %speed of sound is reference??
-plot_it = 10;               %After how many iterations do I save data for plotting? Aka, 10 means every 10 iterations I should save the data
+v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
+CFL = .5;                  %0.5 recommended from Cizmas
+plot_it = 1;               %After how many iterations do I save data for plotting? Aka, 10 means every 10 iterations I should save the data
 
 %% Input and modify the grid
 %read node locations in from the specified grid, put into matraxies
@@ -109,8 +108,14 @@ while (iterations<(user_itmax+1)) && (residual_it>user_tol)
     %residual things for a single iteration
     spani = 3:(cells_Imax-2);
     spanj = 3:(cells_Jmax-2);
-    meanresidual(:,iterations) = [mean(mean(Residual(spani,spanj,1)));mean(mean(Residual(spani,spanj,2))); mean(mean(Residual(spani,spanj,3)));mean(mean(Residual(spani,spanj,4)))];
+    meanresidual(:,iterations) = [abs(mean(mean(Residual(spani,spanj,1))));abs(mean(mean(Residual(spani,spanj,2)))); abs(mean(mean(Residual(spani,spanj,3))));abs(mean(mean(Residual(spani,spanj,4))))];
     maxresidual(:,iterations) = [max(max(Residual(spani,spanj,1)));max(max(Residual(spani,spanj,2)));max(max(Residual(spani,spanj,3)));max(max(Residual(spani,spanj,4)));];
+    
+    %find location of maximum residual
+    [i_r1(iterations), j_r1(iterations)] = find(ismember(Residual(:,:,1), maxresidual(1,iterations)));
+    [i_r2(iterations), j_r2(iterations)] = find(ismember(Residual(:,:,2), maxresidual(2,iterations)));
+    [i_r3(iterations), j_r3(iterations)] = find(ismember(Residual(:,:,3), maxresidual(3,iterations)));
+    [i_r4(iterations), j_r4(iterations)] = find(ismember(Residual(:,:,4), maxresidual(4,iterations)));
 
     %reapply BC
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_resevoir,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
