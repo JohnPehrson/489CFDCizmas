@@ -1,4 +1,4 @@
-function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,plot_it_reduced,plot_it)
+function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax)
 %This function takes the final results of the program and writes it to a
 %text file that can be imported into tecPlot to visualize the data
 
@@ -9,7 +9,7 @@ filetitle = ['Pehrson_P2_' newmach '_' num2str(iterations-1) '.txt'];
 fileID = fopen(filetitle,'w');
 
 
-for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in time/iterations
+for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/iterations
   
 %   %For each loop, only consider one q,f,g set of data
 %   cells_q = plot_cells_q(timeloop,:,:,:);
@@ -57,7 +57,7 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
         end
 
         %Set time variable
-        IterationsCount = plot_it*(timeloop-1);
+        IterationsCount = (timeloop-1);
         IterationsName = num2str(IterationsCount);
 
 
