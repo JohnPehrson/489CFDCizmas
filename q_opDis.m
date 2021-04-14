@@ -4,7 +4,7 @@ function [q_op_vec_out] = q_opDis(q5by5,type,order,face)
 
 q = q5by5;
 %Inputs
-%a 5x5x4 q matrix with only + terms being nonzero, centered at the cell being
+%a 5x5x4 q matrix centered at the cell being
     %calculated in the dissipation function
 %type = 'xi' or 'n'
 %order = 1 or 3
