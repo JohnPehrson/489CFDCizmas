@@ -1,4 +1,4 @@
-function [cells_q,cells_f,cells_g,cells_pressure,cells_eig,cells_c] = setInitialConditions(user_Mach,user_Gamma,user_alpha,P_static,cells_q,cells_f,cells_g,cells_pressure,cells_eig,cells_c,cells_Imax,cells_Jmax,nodes_x,nodes_y)
+function [cells_q,cells_f,cells_g,cells_pressure,cells_eig,cells_c] = setInitialConditions(user_Mach,user_Gamma,user_alpha,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax,nodes_x,nodes_y)
 %This function defines the initial conditions of the flow
 %Assume 2 layers of ghost nodes
 %Using info from page 29 of my handwritten notes
@@ -27,11 +27,6 @@ for j = 3:(cells_Jmax-2)
             cells_q(i,j,:) = q;
             cells_f(i,j,:) = f;
             cells_g(i,j,:) = g;
-            cells_pressure(i,j) = p;
-            cells_c(i,j) = c;
-            %find cell nodes
-            [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
-            [cells_eig(i,j,1),cells_eig(i,j,2)] = eigenvaluefinder(x_abcd,y_abcd,cells_q(i,j,:),cells_c(i,j));
             
     end
 end
