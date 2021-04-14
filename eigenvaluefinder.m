@@ -10,6 +10,7 @@ function [eigenvalueout_z,eigenvalueout_n] = eigenvaluefinder(x_abcd,y_abcd,q,c)
 
 
 %calculate information about the cell cell
+q = squeeze(q);
 u = q(2)/q(1);
 v = q(3)/q(1);
 V = [u;v];
