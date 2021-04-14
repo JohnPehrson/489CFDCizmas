@@ -17,9 +17,14 @@ gN = 0.5*(g(1,:)+g(2,:));
 gE = 0.5*(g(1,:)+g(3,:));
 gS = 0.5*(g(1,:)+g(4,:));
 gW = 0.5*(g(1,:)+g(5,:));
+
 %Calculate the Residual        
-Residual = fN*(y(4)-y(3))-gN*(x(4)-x(3))+fW*(y(1)-y(4))-gW*(x(1)-x(4))+...
-           fS*(y(2)-y(1))-gS*(x(2)-x(1))+fE*(y(3)-y(2))-gE*(x(3)-x(2));
+Residual = fN*(y(4)-y(3))-gN*(x(4)-x(3))+...
+           fW*(y(1)-y(4))-gW*(x(1)-x(4))+...
+           fS*(y(2)-y(1))-gS*(x(2)-x(1))+...
+           fE*(y(3)-y(2))-gE*(x(3)-x(2));
+
+       
 Residual = squeeze(Residual);
 end
 
