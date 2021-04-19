@@ -19,11 +19,6 @@ beta = atand(walltan(2)/walltan(1));
 gamma = atand(flowcellvelocity(2)/flowcellvelocity(1));
 alpha = gamma-beta;
 theta = beta-alpha;
-% angle = theta; %to get into the old format
-
-% if (flowcellvelocity(2)-walltan(2))<0
-%     angle = angle*-1;
-% end
 
 %find mirrored velocities
 velocity_gc = [cosd(theta);sind(theta)]*norm(flowcellvelocity);
