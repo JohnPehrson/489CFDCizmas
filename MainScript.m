@@ -16,7 +16,7 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 1000;            %maximum number of iterations made when solving
+user_itmax = 500;            %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
@@ -141,6 +141,9 @@ plot_i = 2;
 
     %reapply BC
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    
+    %update p,c,eigenvalues
+    [cells_pressure,cells_c,cells_eig] = update_p_c_eig(user_Gamma,cells_pressure,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax);
     
     %Save data for plotting
         plot_cells_q(plot_i,:,:,:) = cells_q; %save data for visualization
