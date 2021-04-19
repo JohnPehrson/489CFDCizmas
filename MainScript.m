@@ -16,7 +16,7 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 50;            %maximum number of iterations made when solving
+user_itmax = 1000;            %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
@@ -59,6 +59,7 @@ Residual = zeros(cells_Imax,cells_Jmax,4); %used to track residuals in a single 
 plot_cells_q = NaN(1+user_itmax,cells_Imax,cells_Jmax,4); %The 1+plot_it_reduced is for bc, then the iterations
 plot_cells_f = plot_cells_q;
 plot_cells_g = plot_cells_q;
+plot_Residual = plot_cells_q;
 
 %Set up 3d matraxies for cells over time (2d matraxies tracked for
 %iterations)
@@ -82,6 +83,7 @@ P_static = 1/user_Gamma;
 plot_cells_q(1,:,:,:) = cells_q; %save data for visualization
 plot_cells_f(1,:,:,:) = cells_f;
 plot_cells_g(1,:,:,:) = cells_g;
+plot_Residual(1,:,:,:) = zeros(cells_Imax,cells_Jmax,4);
 plot_cells_pressure(1,:,:) = cells_pressure;
 plot_cells_c(1,:,:) = cells_c;
 plot_i = 2;
@@ -144,6 +146,7 @@ plot_i = 2;
         plot_cells_q(plot_i,:,:,:) = cells_q; %save data for visualization
         plot_cells_f(plot_i,:,:,:) = cells_f;
         plot_cells_g(plot_i,:,:,:) = cells_g;
+        plot_Residual(plot_i,:,:,:) = Residual;
         plot_cells_pressure(plot_i,:,:) = cells_pressure;
         plot_cells_c(plot_i,:,:) = cells_c;
         plot_i = plot_i+1;
@@ -157,7 +160,7 @@ end
 %% Report Data
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_cells_pressure,plot_cells_c,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
+exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
 
 %% Plot Residuals
 figure;
