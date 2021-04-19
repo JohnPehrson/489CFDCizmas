@@ -16,11 +16,11 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 50;            %maximum number of iterations made when solving
+user_itmax = 500;            %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
-v4 = 0.005;                 %[0.0001,0.01] dissipation switch fourth order
-CFL = .5;                   %0.5 recommended from Cizmas
+v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
+CFL = 2;                   %0.5 recommended from Cizmas
 
 
 %% Input and modify the grid
@@ -60,6 +60,11 @@ plot_cells_q = NaN(1+user_itmax,cells_Imax,cells_Jmax,4); %The 1+plot_it_reduced
 plot_cells_f = plot_cells_q;
 plot_cells_g = plot_cells_q;
 
+%Set up 3d matraxies for cells over time (2d matraxies tracked for
+%iterations)
+plot_cells_pressure = NaN(1+user_itmax,cells_Imax,cells_Jmax);
+plot_cells_c = plot_cells_pressure;
+
 
 %% Grid Initialization
 
@@ -77,6 +82,8 @@ P_static = 1/user_Gamma;
 plot_cells_q(1,:,:,:) = cells_q; %save data for visualization
 plot_cells_f(1,:,:,:) = cells_f;
 plot_cells_g(1,:,:,:) = cells_g;
+plot_cells_pressure(1,:,:) = cells_pressure;
+plot_cells_c(1,:,:) = cells_c;
 plot_i = 2;
 
 %% Iteration Loop for solving
@@ -117,19 +124,19 @@ plot_i = 2;
             
         end
     end
-%     
-%     %residual things for a single iteration
-%     spani = 3:(cells_Imax-2);
-%     spanj = 3:(cells_Jmax-2);
-%     meanresidual(:,iterations) = [abs(mean(mean(Residual(spani,spanj,1))));abs(mean(mean(Residual(spani,spanj,2)))); abs(mean(mean(Residual(spani,spanj,3))));abs(mean(mean(Residual(spani,spanj,4))))];
-%     maxresidual(:,iterations) = [max(max(Residual(spani,spanj,1)));max(max(Residual(spani,spanj,2)));max(max(Residual(spani,spanj,3)));max(max(Residual(spani,spanj,4)));];
-% %     
-%     %find location of maximum residual
-%     [i_r1(iterations), j_r1(iterations)] = find(ismember(Residual(:,:,1), maxresidual(1,iterations)));
-%     [i_r2(iterations), j_r2(iterations)] = find(ismember(Residual(:,:,2), maxresidual(2,iterations)));
-%     [i_r3(iterations), j_r3(iterations)] = find(ismember(Residual(:,:,3), maxresidual(3,iterations)));
-%     [i_r4(iterations), j_r4(iterations)] = find(ismember(Residual(:,:,4), maxresidual(4,iterations)));
-% 
+    
+    %residual tracking for a single iteration
+    spani = 3:(cells_Imax-2);
+    spanj = 3:(cells_Jmax-2);
+    meanresidual(:,iterations) = [abs(mean(mean(Residual(spani,spanj,1))));abs(mean(mean(Residual(spani,spanj,2)))); abs(mean(mean(Residual(spani,spanj,3))));abs(mean(mean(Residual(spani,spanj,4))))];
+    maxresidual(:,iterations) = [max(max(Residual(spani,spanj,1)));max(max(Residual(spani,spanj,2)));max(max(Residual(spani,spanj,3)));max(max(Residual(spani,spanj,4)));];
+    
+    %find location of maximum residual
+    [i_r1(iterations), j_r1(iterations)] = find(ismember(Residual(:,:,1), maxresidual(1,iterations)));
+    [i_r2(iterations), j_r2(iterations)] = find(ismember(Residual(:,:,2), maxresidual(2,iterations)));
+    [i_r3(iterations), j_r3(iterations)] = find(ismember(Residual(:,:,3), maxresidual(3,iterations)));
+    [i_r4(iterations), j_r4(iterations)] = find(ismember(Residual(:,:,4), maxresidual(4,iterations)));
+
     %reapply BC
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
@@ -137,6 +144,8 @@ plot_i = 2;
         plot_cells_q(plot_i,:,:,:) = cells_q; %save data for visualization
         plot_cells_f(plot_i,:,:,:) = cells_f;
         plot_cells_g(plot_i,:,:,:) = cells_g;
+        plot_cells_pressure(plot_i,:,:) = cells_pressure;
+        plot_cells_c(plot_i,:,:) = cells_c;
         plot_i = plot_i+1;
 
     
@@ -148,26 +157,26 @@ end
 %% Report Data
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
+exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_cells_pressure,plot_cells_c,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
 
-% %% Plot Residuals
-% figure;
-% for i = 1:4
-% plot(1:user_itmax,meanresidual(i,:),'Linewidth',2);
-% hold on;
-% end
-% title('Mean Residuals');
-% legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
-% xlabel('Iteration #');
-% ylabel('Mean Residual');
-% 
-% figure;
-% for i = 1:4
-% plot(1:user_itmax,maxresidual(i,:),'Linewidth',2);
-% hold on;
-% end
-% title('Max Residuals');
-% legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
-% xlabel('Iteration #');
-% ylabel('Max Residual');
+%% Plot Residuals
+figure;
+for i = 1:4
+plot(1:user_itmax,meanresidual(i,:),'Linewidth',2);
+hold on;
+end
+title('Mean Residuals');
+legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
+xlabel('Iteration #');
+ylabel('Mean Residual');
+
+figure;
+for i = 1:4
+plot(1:user_itmax,maxresidual(i,:),'Linewidth',2);
+hold on;
+end
+title('Max Residuals');
+legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
+xlabel('Iteration #');
+ylabel('Max Residual');
 
