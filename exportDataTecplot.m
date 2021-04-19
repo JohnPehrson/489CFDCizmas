@@ -26,6 +26,11 @@ for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/it
     f2 = q1;
     f3 = q1;
     f4 = q1;
+    g1 = q1;
+    g2 = q1;
+    g3 = q1;
+    g4 = q1;
+    
 
     nodeit = 1;
         for j = 1:nodes_Jmax
@@ -47,6 +52,10 @@ for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/it
                 f2(cellit) = plot_cells_f(timeloop,i,j,2);
                 f3(cellit) = plot_cells_f(timeloop,i,j,3);
                 f4(cellit) = plot_cells_f(timeloop,i,j,4);
+                g1(cellit) =  plot_cells_g(timeloop,i,j,1);
+                g2(cellit) = plot_cells_g(timeloop,i,j,2);
+                g3(cellit) = plot_cells_g(timeloop,i,j,3);
+                g4(cellit) = plot_cells_g(timeloop,i,j,4);
                 pstatic(cellit) =  plot_cells_pressure(timeloop,i,j); 
                 Mach(cellit) = sqrt((q2(cellit)^2+q3(cellit)^2)/(q1(cellit)^2));
                 c(cellit) = plot_cells_c(timeloop,i,j);
@@ -60,8 +69,8 @@ for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/it
 
 
         %write to the data file
-        fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","f1", "f2", "f3", "f4","Pressure","Mach","c" \n');
-        fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12,13]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
+        fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","f1", "f2", "f3", "f4","g1","g2","g3","g4","Pressure","Mach","c" \n');
+        fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
         for i = 1:nodes_Imax*nodes_Jmax
             fprintf(fileID,'%.5g ', x(i));
         end
@@ -100,6 +109,22 @@ for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/it
         fprintf(fileID,'\n');
         for i = 1:cells_Imax*cells_Jmax
             fprintf(fileID,'%.5g ', f4(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g1(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g2(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g3(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g4(i));
         end
         fprintf(fileID,'\n');
         for i = 1:cells_Imax*cells_Jmax
