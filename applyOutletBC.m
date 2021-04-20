@@ -14,7 +14,6 @@ i_gc = (cells_Imax-1):cells_Imax;
 %loop through vertical cells at the outlet
     for j = 3:(cells_Jmax-2) 
         [cells_q(i_gc,j,:),cells_f(i_gc,j,:),cells_g(i_gc,j,:)] = singleCellOutletBC(user_Gamma,cells_q(i_g,j,:),cells_f(i_g,j,:),cells_g(i_g,j,:),P_static);
-        %[q_out,f_out,g_out] = singleCellOutletBC(gammag,q_in,f_in,g_in,Pstatic_inf)
     end
 
 

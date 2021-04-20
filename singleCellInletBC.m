@@ -37,8 +37,8 @@ Eb = pb/((user_Gamma-1)*rhob)+0.5*(ub^2+vb^2);
 
 %Put variables into the q,f,g form
 q_b_cell = [rhob;rhob*ub;rhob*vb;rhob*Eb];
-f_b_cell = [rhob*ub;rhob*ub^2+pb;rhob*ub*vb;rhob*(Eb+pb)*ub];
-g_b_cell = [rhob*vb;rhob*ub*vb;rhob*vb^2+pb;rhob*(Eb+pb)*vb];
+f_b_cell = [rhob*ub;rhob*ub^2+pb;rhob*ub*vb;rhob*(Eb+pb/rhob)*ub];
+g_b_cell = [rhob*vb;rhob*ub*vb;rhob*vb^2+pb;rhob*(Eb+pb/rhob)*vb];
 
 %create empty output matrixes in the right format
 q_b = NaN(2,1,4);
