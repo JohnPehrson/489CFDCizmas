@@ -12,14 +12,14 @@ clear all;close all;clc;
 %handed off to TecPlot via a .txt file. 
 
 %% User-Defined Variables
-user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
+user_Mach = 0.1;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 150;            %maximum number of iterations made when solving
+user_itmax = 999;            %maximum number of iterations made when solving
 user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
-v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
+v4 = 0.004;              %[0.0001,0.01] dissipation switch fourth order
 CFL = 2;                   %0.5 recommended from Cizmas
 
 

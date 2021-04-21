@@ -40,12 +40,6 @@ f_out(2,:,:) = f_out1cell;
 g_out(1,:,:) = g_out1cell;
 g_out(2,:,:) = g_out1cell;
 
-%if statment to try and identify when this is being used in high period of
-%pressure flux on the back wall
-    if q_in(1,1,4)<1.8
-        fprintf('Check outlet BC');
-    end
-
 
 end
 
