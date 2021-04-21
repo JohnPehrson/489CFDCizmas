@@ -1,4 +1,4 @@
-function [q_out,f_out,g_out] = singleCellOutletBC(gammag,q_in,f_in,g_in,P_resevoir,user_Mach)
+function [q_out,f_out,g_out] = singleCellOutletBC(user_Gamma,q_in,f_in,g_in,P_static)
 %This function sets the outlet boundary conditons in a single cell. Used in
 %"applyOutletBC".
 
@@ -18,18 +18,14 @@ rho(3) = 2*rho(2)-rho(1);
 m(3) = 2*m(2)-m(1);
 n(3) = 2*n(2)-n(1);
 
-%find static pressure at the cell
-Pstatic_inf = pressurefinder(P_resevoir,user_Mach,gammag);
-    %use user_Mach to find the Pstatic_inf, meaning that the pressure at
-    %the outlet will be independent of the upstream cells. 
-
 %calculate new epsilon for ghost cells
-epsilon = (Pstatic_inf)/(gammag-1)+0.5*(m(3)^2+n(3)^2)/(rho(3));
+epsilon = (P_static)/(user_Gamma-1)+0.5*(m(3)^2+n(3)^2)/(rho(3));
+E = epsilon/rho(3);
 
 %make single vectors
-q_out1cell = [rho(3),m(3),n(3),epsilon];
-f_out1cell = [m(3),(m(3)^2)/rho(3)+Pstatic_inf,m(3)*n(3)/rho(3),m(3)*((epsilon/rho(3))+Pstatic_inf)];
-g_out1cell = [n(3),m(3)*n(3)/rho(3),(n(3)^2)/rho(3)+Pstatic_inf,n(3)*((epsilon/rho(3))+Pstatic_inf)];
+q_out1cell = [rho(3),m(3),n(3),rho(3)*E];
+f_out1cell = [m(3),(m(3)^2)/rho(3)+P_static,m(3)*n(3)/rho(3),m(3)*(E+P_static/rho(3))];
+g_out1cell = [n(3),m(3)*n(3)/rho(3),(n(3)^2)/rho(3)+P_static,n(3)*(E+P_static/rho(3))];
 
 %create empty output matrixes in the right format
 q_out = NaN(2,1,4);
@@ -43,6 +39,12 @@ f_out(1,:,:) = f_out1cell;
 f_out(2,:,:) = f_out1cell;
 g_out(1,:,:) = g_out1cell;
 g_out(2,:,:) = g_out1cell;
+
+%if statment to try and identify when this is being used in high period of
+%pressure flux on the back wall
+    if q_in(1,1,4)<1.8
+        fprintf('Check outlet BC');
+    end
 
 
 end

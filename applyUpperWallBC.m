@@ -12,7 +12,7 @@ function [q,f,g] = applyUpperWallBC(nodes_x,nodes_y,q,f,g,cells_Imax,cells_Jmax)
 %q,f,g will be Imax,Jmax,4 matraxies each, representing the whole grid
 %cells_Imax and cells_Jmax represent the number of cells in each direction
 
-%loop through ghost cells on the bottom of the wall, make changes
+%loop through ghost cells at the top of the wall, make changes
 j_gc1 = cells_Jmax; %The "last" row of ghost cells
 j_gc2 = cells_Jmax-1; %The "second to last" row of ghost cells
     for i = 3:(cells_Imax-2) %aka for main cells in the i direction
@@ -21,7 +21,6 @@ j_gc2 = cells_Jmax-1; %The "second to last" row of ghost cells
             walltan = [X_wall_abcd(3)-X_wall_abcd(4);Y_wall_abcd(3)-Y_wall_abcd(4)];
         %do boundary calculations to change the second row, by the wall
             [q(i,j_gc2,:),f(i,j_gc2,:),g(i,j_gc2,:)] = singleCellWallBC(q(i,j_gc2-1,:),f(i,j_gc2-1,:),g(i,j_gc2-1,:),walltan);            
-            
         %do boundary calculations to change the first row
             [q(i,j_gc1,:),f(i,j_gc1,:),g(i,j_gc1,:)] = singleCellWallBC(q(i,j_gc1-3,:),f(i,j_gc1-3,:),g(i,j_gc1-3,:),walltan);
                        

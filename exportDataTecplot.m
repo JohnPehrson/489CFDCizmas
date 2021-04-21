@@ -1,4 +1,4 @@
-function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,plot_it_reduced,plot_it)
+function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax)
 %This function takes the final results of the program and writes it to a
 %text file that can be imported into tecPlot to visualize the data
 
@@ -9,13 +9,9 @@ filetitle = ['Pehrson_P2_' newmach '_' num2str(iterations-1) '.txt'];
 fileID = fopen(filetitle,'w');
 
 
-for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in time/iterations
+for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/iterations
   
-%   %For each loop, only consider one q,f,g set of data
-%   cells_q = plot_cells_q(timeloop,:,:,:);
-%   cells_f = plot_cells_g(timeloop,:,:,:);
-%   cells_g = plot_cells_g(timeloop,:,:,:);
-    
+
     %write x,y,q1,q2,q3,q4 vectors that give the data in 1d
     x = NaN(1,nodes_Imax*nodes_Jmax);
     y = x;
@@ -25,11 +21,20 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
     q4 = q1;
     pstatic = q1;
     Mach = q1;
+    c = q1;
     f1 = q1;
     f2 = q1;
     f3 = q1;
     f4 = q1;
-
+    g1 = q1;
+    g2 = q1;
+    g3 = q1;
+    g4 = q1;
+    r1 = q1;
+    r2 = q1;
+    r3 = q1;
+    r4 = q1;
+        
     nodeit = 1;
         for j = 1:nodes_Jmax
             for i = 1:nodes_Imax
@@ -50,20 +55,29 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
                 f2(cellit) = plot_cells_f(timeloop,i,j,2);
                 f3(cellit) = plot_cells_f(timeloop,i,j,3);
                 f4(cellit) = plot_cells_f(timeloop,i,j,4);
-                pstatic(cellit) = plot_cells_f(timeloop,i,j,2)-((plot_cells_g(timeloop,i,j,2))^2)/plot_cells_q(timeloop,i,j,1);   
+                g1(cellit) =  plot_cells_g(timeloop,i,j,1);
+                g2(cellit) = plot_cells_g(timeloop,i,j,2);
+                g3(cellit) = plot_cells_g(timeloop,i,j,3);
+                g4(cellit) = plot_cells_g(timeloop,i,j,4);
+                r1(cellit) =  plot_Residual(timeloop,i,j,1);
+                r2(cellit) = plot_Residual(timeloop,i,j,2);
+                r3(cellit) = plot_Residual(timeloop,i,j,3);
+                r4(cellit) = plot_Residual(timeloop,i,j,4);
+                pstatic(cellit) =  plot_cells_pressure(timeloop,i,j); 
                 Mach(cellit) = sqrt((q2(cellit)^2+q3(cellit)^2)/(q1(cellit)^2));
+                c(cellit) = plot_cells_c(timeloop,i,j);
                 cellit = cellit+1;
             end
         end
 
         %Set time variable
-        IterationsCount = plot_it*(timeloop-1);
+        IterationsCount = (timeloop-1);
         IterationsName = num2str(IterationsCount);
 
 
         %write to the data file
-        fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","f1", "f2", "f3", "f4","Pressure","Mach"\n');
-        fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
+        fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","f1", "f2", "f3", "f4","g1","g2","g3","g4","r1","r2","r3","r4","Pressure","Mach","c" \n');
+        fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
         for i = 1:nodes_Imax*nodes_Jmax
             fprintf(fileID,'%.5g ', x(i));
         end
@@ -105,11 +119,47 @@ for timeloop = 1:(1+plot_it_reduced) %for loop for individual sets of data in ti
         end
         fprintf(fileID,'\n');
         for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g1(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g2(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g3(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', g4(i));
+        end
+                fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', r1(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', r2(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', r3(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', r4(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
             fprintf(fileID,'%.5g ', pstatic(i));
         end
         fprintf(fileID,'\n');
         for i = 1:cells_Imax*cells_Jmax
             fprintf(fileID,'%.5g ', Mach(i));
+        end
+        fprintf(fileID,'\n');
+        for i = 1:cells_Imax*cells_Jmax
+            fprintf(fileID,'%.5g ', c(i));
         end
         fprintf(fileID,'\n');
 
