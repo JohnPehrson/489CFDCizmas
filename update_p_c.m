@@ -1,4 +1,4 @@
-function [cells_p,cells_c,cells_eig] = update_p_c_eig(user_Gamma,cells_p,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax)
+function [cells_p,cells_c,cells_eig] = update_p_c(user_Gamma,cells_p,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax)
 %This function updates the p,c,eigenvalue matraxies for the grid. This
 %function should be called after the boundary conditions are reapplied
 

@@ -42,7 +42,7 @@ meanresidual = NaN(4,user_itmax); %4 quantities to match residual (q vec change)
 maxresidual = NaN(4,user_itmax);
 
 %Set up 2d matraxies for cells
-cells_eig = zeros(cells_Imax,cells_Jmax,2);           %eigenvalues for individual cells
+cells_eig = zeros(cells_Imax,cells_Jmax,4);           %eigenvalues for individual cells. 1:N,2:E,3:S,4:W. Face directions for last index
 cells_pressure = zeros(cells_Imax,cells_Jmax);      %static pressures for individual cells
 cells_c = cells_pressure;                                %speed of sound for individual cells
 A = zeros(cells_Imax,cells_Jmax);                   %initialize empty Area matrix
@@ -83,6 +83,7 @@ P_static = 1/user_Gamma;
 %set boundary conditions after interior initial conditions
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     [cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only, used once
+    
     [cells_pressure,cells_c,cells_eig] = update_p_c_eig(user_Gamma,cells_pressure,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax);
 
 %calculate the force on the bump
