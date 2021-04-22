@@ -10,12 +10,13 @@ function [delta_t] = time_step(CFL,cell_area,x_abcd,y_abcd,ei3by3)
     %ei3by3 is the matrix of local eigenvalues 
 %Outputs: The time step delta_t
     
-i = 2;
+%define eigenvalues on the faces
+i = 2; 
 j = 2;
-lambda_xi_E = 0.5*(ei3by3(i,j,1)+ei3by3(i+1,j,1));
-lambda_xi_W = 0.5*(ei3by3(i,j,1)+ei3by3(i-1,j,1));
-lambda_n_N = 0.5*(ei3by3(i,j,2)+ei3by3(i,j+1,2));
-lambda_n_S = 0.5*(ei3by3(i,j,2)+ei3by3(i,j-1,2));
+lambda_xi_E = 0.5*(ei3by3(i,j,2)+ei3by3(i+1,j,4));
+lambda_xi_W = 0.5*(ei3by3(i,j,4)+ei3by3(i-1,j,2));
+lambda_n_N = 0.5*(ei3by3(i,j,1)+ei3by3(i,j+1,3));
+lambda_n_S = 0.5*(ei3by3(i,j,3)+ei3by3(i,j-1,1));
 
 sumeigenvaluefaces = lambda_n_N*edgelength(x_abcd,y_abcd,'N')+...
                      lambda_xi_E*edgelength(x_abcd,y_abcd,'E')+...
