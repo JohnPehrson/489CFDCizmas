@@ -1,4 +1,4 @@
-function [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax,P_static)
+function [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,user_Mach,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax,P_static)
 %This function applies the outlet boundary conditions by modifying the
 %ghost nodes outside the right edge of the grid. 
 
@@ -13,7 +13,7 @@ i_gc = (cells_Imax-1):cells_Imax;
 
 %loop through vertical cells at the outlet
     for j = 3:(cells_Jmax-2) 
-        [cells_q(i_gc,j,:),cells_f(i_gc,j,:),cells_g(i_gc,j,:)] = singleCellOutletBC(user_Gamma,cells_q(i_g,j,:),cells_f(i_g,j,:),cells_g(i_g,j,:),P_static);
+        [cells_q(i_gc,j,:),cells_f(i_gc,j,:),cells_g(i_gc,j,:)] = singleCellOutletBC_Riemann(user_Gamma,user_Mach,cells_q(i_g,j,:),cells_f(i_g,j,:),cells_g(i_g,j,:),P_static);
     end
 
 

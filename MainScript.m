@@ -16,10 +16,10 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 150;            %maximum number of iterations made when solving
-user_tol = 0.00005;         %acceptable nondimensional error/tolerance of the residual when solving
+user_itmax = 200;            %maximum number of iterations made when solving
+user_tol = 0.000005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
-v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
+v4 = 0.004;              %[0.0001,0.01] dissipation switch fourth order
 CFL = 2;                   %0.5 recommended from Cizmas
 
 
@@ -66,8 +66,14 @@ plot_Residual = plot_cells_q;
 plot_cells_pressure = NaN(1+user_itmax,cells_Imax,cells_Jmax);
 plot_cells_c = plot_cells_pressure;
 
+%Set up 2d matrix for bump force over time
+plot_bump_force = NaN(1+user_itmax,2); % (:,1) is x, (:,2) is y
+
 
 %% Grid Initialization
+
+%identify which bottom wall cells are on the bump
+[cells_range_i] = wallbumpcellfinder(nodes_y,nodes_Imax);
 
 %Set static pressure to be 1/gamma at inlet/outlet far field
 P_static = 1/user_Gamma;
@@ -78,6 +84,9 @@ P_static = 1/user_Gamma;
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     [cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only, used once
     [cells_pressure,cells_c,cells_eig] = update_p_c_eig(user_Gamma,cells_pressure,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax);
+
+%calculate the force on the bump
+[plot_bump_force(1,:)] = bump_force_calculator(cells_pressure,nodes_x,nodes_y,cells_range_i);
     
 %save the initialized grid for visualization    
 plot_cells_q(1,:,:,:) = cells_q; %save data for visualization
@@ -127,6 +136,9 @@ plot_i = 2;
         end
     end
     
+    %calculate the force on the bump
+    [plot_bump_force(plot_i,:)] = bump_force_calculator(cells_pressure,nodes_x,nodes_y,cells_range_i);
+    
     %residual tracking for a single iteration
     spani = 3:(cells_Imax-2);
     spanj = 3:(cells_Jmax-2);
@@ -159,7 +171,7 @@ end
 %Format and export data to visualize in TecPlot
 exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
 
-%% Plot Residuals
+%% Plot Residuals and bump force
 figure;
 for i = 1:4
 plot(1:user_itmax,meanresidual(i,:),'Linewidth',2);
@@ -179,4 +191,19 @@ title('Max Residuals');
 legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
 xlabel('Iteration #');
 ylabel('Max Residual');
+
+figure;
+yyaxis left;
+plot(1:user_itmax+1,plot_bump_force(:,1),'Linewidth',2);
+hold on;
+yyaxis right;
+plot(1:user_itmax+1,plot_bump_force(:,2),'Linewidth',2);
+title('Forces at the bump');
+xlabel('Iteration number');
+
+yyaxis left;
+ylabel('Nondimensional Force in the X direction');
+yyaxis right;
+ylabel('Nondimensional Force in the Y direction');
+legend('Force in X','Force in Y');
 

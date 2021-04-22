@@ -1,4 +1,4 @@
-function [q,f,g] = applyBottomWallBC(nodes_x,nodes_y,q,f,g,cells_Imax)
+function [q,f,g] = applyBottomWallBC(user_Gamma,nodes_x,nodes_y,q,f,g,cells_Imax)
 %This function applies boundary conditions on the bottom wall through the
 %use of ghost cells. The ghost cells have their pressure, energy, and
 %density matched to interior cells, and their velocities mirrored over the
@@ -20,10 +20,10 @@ j_gc2 = 2; %The "second" row of ghost nodes is at j = 2
             [X_wall_abcd,Y_wall_abcd] = nodes_touch_cell(i,j_gc2+1,nodes_x,nodes_y);
             walltan = [X_wall_abcd(2)-X_wall_abcd(1);Y_wall_abcd(2)-Y_wall_abcd(1)];
         %do boundary calculations to change the second row, by the wall
-            [q(i,j_gc2,:),f(i,j_gc2,:),g(i,j_gc2,:)] = singleCellWallBC(q(i,j_gc2+1,:),f(i,j_gc2+1,:),g(i,j_gc2+1,:),walltan);            
+            [q(i,j_gc2,:),f(i,j_gc2,:),g(i,j_gc2,:)] = singleCellWallBC(user_Gamma,q(i,j_gc2+1,:),f(i,j_gc2+1,:),g(i,j_gc2+1,:),walltan);            
             
         %do boundary calculations to change the first row
-            [q(i,j_gc1,:),f(i,j_gc1,:),g(i,j_gc1,:)] = singleCellWallBC(q(i,j_gc1+3,:),f(i,j_gc1+3,:),g(i,j_gc1+3,:),walltan);
+            [q(i,j_gc1,:),f(i,j_gc1,:),g(i,j_gc1,:)] = singleCellWallBC(user_Gamma,q(i,j_gc1+3,:),f(i,j_gc1+3,:),g(i,j_gc1+3,:),walltan);
                        
     end
 
