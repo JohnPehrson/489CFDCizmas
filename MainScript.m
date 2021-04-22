@@ -16,7 +16,7 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 200;            %maximum number of iterations made when solving
+user_itmax = 1400;            %maximum number of iterations made when solving
 user_tol = 0.000005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;              %[0.0001,0.01] dissipation switch fourth order
@@ -83,9 +83,18 @@ P_static = 1/user_Gamma;
 %set boundary conditions after interior initial conditions
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     [cells_q,cells_f,cells_g] = cornersetter(cells_q,cells_f,cells_g,cells_Imax,cells_Jmax); %visual change only, used once
+    [cells_pressure,cells_c] = update_p_c(user_Gamma,cells_pressure,cells_c,cells_q,cells_f,cells_Imax,cells_Jmax);
     
-    [cells_pressure,cells_c,cells_eig] = update_p_c_eig(user_Gamma,cells_pressure,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax);
-
+        %update eigenvalues for interior cells
+        for i = 3:(cells_Imax-2)
+            for j = 3:(cells_Jmax-2)
+                [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
+                cells_eig(i,j,:) = eigenvaluefinder(x_abcd,y_abcd,cells_q(i,j,:),cells_c(i,j));
+            end
+        end
+        %update boundary eigenvalues for ghost cells
+        cells_eig = eig_BC(cells_Imax,cells_Jmax,cells_eig);
+        
 %calculate the force on the bump
 [plot_bump_force(1,:)] = bump_force_calculator(cells_pressure,nodes_x,nodes_y,cells_range_i);
     
@@ -132,7 +141,7 @@ plot_i = 2;
             cells_pressure(i,j) = cells_f(i,j,2)-(cells_q(i,j,2)^2)/cells_q(i,j,1);
             cells_c(i,j) = sqrt(user_Gamma*cells_pressure(i,j)/cells_q(i,j,1));
             [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
-            [cells_eig(i,j,1),cells_eig(i,j,2)] = eigenvaluefinder(x_abcd,y_abcd,cells_q(i,j,:),cells_c(i,j));
+            cells_eig(i,j,:) = eigenvaluefinder(x_abcd,y_abcd,cells_q(i,j,:),cells_c(i,j));
             
         end
     end
@@ -150,7 +159,8 @@ plot_i = 2;
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
     
     %update p,c,eigenvalues
-    [cells_pressure,cells_c,cells_eig] = update_p_c_eig(user_Gamma,cells_pressure,cells_c,cells_eig,cells_q,cells_f,nodes_x,nodes_y,cells_Imax,cells_Jmax);
+    [cells_pressure,cells_c] = update_p_c(user_Gamma,cells_pressure,cells_c,cells_q,cells_f,cells_Imax,cells_Jmax);
+    cells_eig = eig_BC(cells_Imax,cells_Jmax,cells_eig);
     
     %Save data for plotting
         plot_cells_q(plot_i,:,:,:) = cells_q; %save data for visualization
