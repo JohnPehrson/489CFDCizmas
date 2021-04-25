@@ -13,12 +13,12 @@ for i = 3:(cells_Imax-2)
     cells_eig(i,jtop+1,3) = cells_eig(i,jtop,1);
     cells_eig(i,jtop+1,1) = cells_eig(i,jtop,3);
 end
-%inlet?
+%inlet
 for j = 3:(cells_Jmax-2)
     cells_eig(2,j,2) = cells_eig(3,j,4);
     cells_eig(2,j,4) = cells_eig(3,j,2);
 end
-%outlet?
+%outlet
 iout = cells_Imax-2;
 for j = 3:(cells_Jmax-2)
     cells_eig(iout+1,j,4) = cells_eig(iout,j,2);
