@@ -25,6 +25,6 @@ sumeigenvaluefaces = lambda_n_N*edgelength(x_abcd,y_abcd,'N')+...
 
                  
 delta_t_max = 2*cell_area/sumeigenvaluefaces;
-delta_t = delta_t_max/CFL;
+delta_t = delta_t_max*CFL;
 end
 

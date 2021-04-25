@@ -15,12 +15,12 @@ clear all;close all;clc;
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
-user_MeshQual = 'coarse';   %choose either coarse, medium, or fine
-user_itmax = 1400;            %maximum number of iterations made when solving
+user_MeshQual = 'test';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
+user_itmax = 50;            %maximum number of iterations made when solving
 user_tol = 0.000005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;              %[0.0001,0.01] dissipation switch fourth order
-CFL = 2;                   %0.5 recommended from Cizmas
+CFL = 1;                   %0.5 recommended from Cizmas
 
 
 %% Input and modify the grid
@@ -153,7 +153,7 @@ plot_i = 2;
     spani = 3:(cells_Imax-2);
     spanj = 3:(cells_Jmax-2);
     meanresidual(:,iterations) = [abs(mean(mean(Residual(spani,spanj,1))));abs(mean(mean(Residual(spani,spanj,2)))); abs(mean(mean(Residual(spani,spanj,3))));abs(mean(mean(Residual(spani,spanj,4))))];
-    maxresidual(:,iterations) = [max(max(Residual(spani,spanj,1)));max(max(Residual(spani,spanj,2)));max(max(Residual(spani,spanj,3)));max(max(Residual(spani,spanj,4)));];
+    maxresidual(:,iterations) = [max(max(abs(Residual(spani,spanj,1))));max(max(abs(Residual(spani,spanj,2))));max(max(abs(Residual(spani,spanj,3))));max(max(abs(Residual(spani,spanj,4))));];
 
     %reapply BC
     [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);

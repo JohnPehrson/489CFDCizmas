@@ -53,10 +53,5 @@ f_b(2,:,:) = f_b_cell;
 g_b(1,:,:) = g_b_cell;
 g_b(2,:,:) = g_b_cell;
 
-
-if pb<0.5
-    fprintf('whats up');
-end
-
 end
 
