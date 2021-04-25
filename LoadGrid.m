@@ -10,6 +10,11 @@ function [xout,yout] = LoadGrid(gridtype)
     elseif strcmp(gridtype,'fine')
         %fine grid
         
+    elseif strcmp(gridtype,'test') %test grid
+        load('testgridX.mat');
+        load('testgridY.mat');
+        xout = x;
+        yout = y;
     else
         fprintf('Please input the correct grid descriptor');
     end
