@@ -15,12 +15,13 @@ clear all;close all;clc;
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
-user_MeshQual = 'test';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
-user_itmax = 70;            %maximum number of iterations made when solving
-user_tol = 0.000005;         %acceptable nondimensional error/tolerance of the residual when solving
+user_MeshQual = 'coarse';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
+user_itmax = 500;            %maximum number of iterations made when solving
+user_tol = 0.000005;        %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
-v4 = 0.004;              %[0.0001,0.01] dissipation switch fourth order
-CFL = .5;                   %0.5 recommended from Cizmas
+v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
+CFL = 1.25;                  %0.5 recommended from Cizmas
+report_freq = 1;            %the frequency with which data is exported and plotted. Only for output
 
 
 %% Input and modify the grid
@@ -138,8 +139,12 @@ plot_i = 2;
             %calculate f and g into the rk timestep thing
                  f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
                  g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);                     
+            
+            %cell is near boundary indicators?
+                [ind1,ind2] = cellnearboundarychecker(i,j,cells_Imax,cells_Jmax);
+                 
             %Runge-Kutta Temporal Incrementing
-                [cells_q(i,j,:),cells_f(i,j,:),cells_g(i,j,:),Residual(i,j,:)] = RK_time_step(user_Gamma,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW);
+                [cells_q(i,j,:),cells_f(i,j,:),cells_g(i,j,:),Residual(i,j,:)] = RK_time_step(user_Gamma,user_Mach,user_alpha,P_static,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW,ind1,ind2,cells_Imax,cells_Jmax);
         
             %update the eigenvalues, pressure, and c for the cell
             cells_pressure(i,j) = cells_f(i,j,2)-(cells_q(i,j,2)^2)/cells_q(i,j,1);
@@ -185,12 +190,12 @@ end
 %% Report Data
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
+exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq);
 
 %% Plot Residuals and bump force
 figure;
 for i = 1:4
-plot(1:user_itmax,meanresidual(i,:),'Linewidth',2);
+plot(1:report_freq:user_itmax,meanresidual(i,1:report_freq:user_itmax),'Linewidth',2);
 hold on;
 end
 title('Mean Residuals');
@@ -200,7 +205,7 @@ ylabel('Mean Residual');
 
 figure;
 for i = 1:4
-plot(1:user_itmax,maxresidual(i,:),'Linewidth',2);
+plot(1:report_freq:user_itmax,maxresidual(i,1:report_freq:user_itmax),'Linewidth',2);
 hold on;
 end
 title('Max Residuals');
@@ -210,10 +215,10 @@ ylabel('Max Residual');
 
 figure;
 yyaxis left;
-plot(1:user_itmax+1,plot_bump_force(:,1),'Linewidth',2);
+plot(1:report_freq:user_itmax+1,plot_bump_force(1:report_freq:user_itmax+1,1),'Linewidth',2);
 hold on;
 yyaxis right;
-plot(1:user_itmax+1,plot_bump_force(:,2),'Linewidth',2);
+plot(1:report_freq:user_itmax+1,plot_bump_force(1:report_freq:user_itmax+1,2),'Linewidth',2);
 title('Forces at the bump');
 xlabel('Iteration number');
 
