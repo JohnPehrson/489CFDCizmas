@@ -12,8 +12,8 @@ H = E+p/rho;
 % c = sqrt(user_Gamma*p/rho);
 
 %loop for individual cells (loop j outside, for i in that loop)
-for j = 1:(cells_Jmax)
-    for i = 1:(cells_Imax)
+for j = 3:(cells_Jmax-2)
+    for i = 3:(cells_Imax-2)
         %assign alpha,u,v depending on the cell
         [AoAtangent] = bottomwalltangent(nodes_x(i,j)); %find AoA in rad of the flow at that point
         alpha = deg2rad(user_alpha)+AoAtangent*(1-nodes_y(i,j)).^2; %AoA component to account for wall, nodes_y to damp for the closeness to the top wall
