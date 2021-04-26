@@ -1,4 +1,4 @@
-function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax)
+function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq)
 %This function takes the final results of the program and writes it to a
 %text file that can be imported into tecPlot to visualize the data
 
@@ -9,7 +9,7 @@ filetitle = ['Pehrson_P2_' newmach '_' num2str(iterations-1) '.txt'];
 fileID = fopen(filetitle,'w');
 
 
-for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/iterations
+for timeloop = 1:report_freq:(1+user_itmax) %for loop for individual sets of data in time/iterations
   
 
     %write x,y,q1,q2,q3,q4 vectors that give the data in 1d
