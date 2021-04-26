@@ -16,11 +16,11 @@ user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
 user_MeshQual = 'test';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
-user_itmax = 50;            %maximum number of iterations made when solving
+user_itmax = 70;            %maximum number of iterations made when solving
 user_tol = 0.000005;         %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;              %[0.0001,0.01] dissipation switch fourth order
-CFL = 1;                   %0.5 recommended from Cizmas
+CFL = .5;                   %0.5 recommended from Cizmas
 
 
 %% Input and modify the grid
@@ -42,7 +42,7 @@ meanresidual = NaN(4,user_itmax); %4 quantities to match residual (q vec change)
 maxresidual = NaN(4,user_itmax);
 
 %Set up 2d matraxies for cells
-cells_eig = zeros(cells_Imax,cells_Jmax,4);           %eigenvalues for individual cells. 1:N,2:E,3:S,4:W. Face directions for last index
+cells_eig = NaN(cells_Imax,cells_Jmax,4);           %eigenvalues for individual cells. 1:N,2:E,3:S,4:W. Face directions for last index
 cells_pressure = zeros(cells_Imax,cells_Jmax);      %static pressures for individual cells
 cells_c = cells_pressure;                                %speed of sound for individual cells
 A = zeros(cells_Imax,cells_Jmax);                   %initialize empty Area matrix
@@ -60,6 +60,8 @@ plot_cells_q = NaN(1+user_itmax,cells_Imax,cells_Jmax,4); %The 1+plot_it_reduced
 plot_cells_f = plot_cells_q;
 plot_cells_g = plot_cells_q;
 plot_Residual = plot_cells_q;
+plot_cells_dissipation = zeros(user_itmax+1,cells_Imax,cells_Jmax,4);
+
 
 %Set up 3d matraxies for cells over time (2d matraxies tracked for
 %iterations)
@@ -124,9 +126,11 @@ plot_i = 2;
             %calculate and freeze a D
                 [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
                 q5by5 = cells_q((i-2):(i+2),(j-2):(j+2),:);
-                p5by5 = cells_f((i-2):(i+2),(j-2):(j+2),2)-((cells_q((i-2):(i+2),(j-2):(j+2),2)).^2)./cells_q((i-2):(i+2),(j-2):(j+2),1);
+                p5by5 = cells_pressure((i-2):(i+2),(j-2):(j+2));
                 eig3by3 = cells_eig((i-1):(i+1),(j-1):(j+1),:);
-                D_freeze = Dis(v2,v4,user_Gamma,x_abcd,y_abcd,q5by5,p5by5,eig3by3);
+                D_freeze = Dis(v2,v4,user_Gamma,x_abcd,y_abcd,q5by5,p5by5,eig3by3);           
+                    %save dissipation for visualization
+                    plot_cells_dissipation(plot_i,i,j,:) = D_freeze;
             %grab the cell area
                 A_cell = A(i,j);
             %get the delta_t
@@ -142,7 +146,7 @@ plot_i = 2;
             cells_c(i,j) = sqrt(user_Gamma*cells_pressure(i,j)/cells_q(i,j,1));
             [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
             cells_eig(i,j,:) = eigenvaluefinder(x_abcd,y_abcd,cells_q(i,j,:),cells_c(i,j));
-            
+                   
         end
     end
     
@@ -174,13 +178,14 @@ plot_i = 2;
     
     %increase iteration count
     iterations = iterations+1;
+   
 end
 
 
 %% Report Data
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
+exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax);
 
 %% Plot Residuals and bump force
 figure;

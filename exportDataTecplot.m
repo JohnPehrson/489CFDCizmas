@@ -190,15 +190,6 @@ for timeloop = 1:(1+user_itmax) %for loop for individual sets of data in time/it
 end
 
 
-
-
-
-
-
-
-
-
-
     fclose(fileID);
 end
 

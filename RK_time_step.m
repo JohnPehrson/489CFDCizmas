@@ -17,6 +17,10 @@ for k = 1:4 %loops through the 4 steps in the RK algorithm
         [f,g] = refresh_f_g(q_rk(:,k),user_Gamma);
         f_cNESW(1,:) = f';
         g_cNESW(1,:) = g';
+        
+        %reapply BC
+        
+        
 end
 cell_q_out = q_rk(:,4);
 cell_f_out = f_cNESW(1,:)';
