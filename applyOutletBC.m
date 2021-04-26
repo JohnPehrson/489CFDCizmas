@@ -8,7 +8,7 @@ function [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,user_Mach,cells_q,
 %epsilon = rho*E is defined using the static pressure, m,n
 
 %reference indexes for grid cells and ghost cells
-i_g = (cells_Imax-3):(cells_Imax-2);
+i_g = (cells_Imax-2);
 i_gc = (cells_Imax-1):cells_Imax;
 
 %loop through vertical cells at the outlet

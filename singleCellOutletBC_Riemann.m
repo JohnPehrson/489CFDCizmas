@@ -10,8 +10,7 @@ function [q_out,f_out,g_out] = singleCellOutletBC_Riemann(user_Gamma,user_Mach,q
 
 % P_static is freestream pressure of the flow at infinity
 
-%% Try Case number 1: 
-%R- is cells, R+ is infinity
+%% R- is cells, R+ is infinity
 
 %R-
 uinf = user_Mach;
@@ -21,9 +20,9 @@ cinf = sqrt(user_Gamma*pinf/rhoinf);
 R_neg = uinf-2*cinf/(user_Gamma-1);
 
 %R+
-rhoc = q_in(2,1,1);
-uc = q_in(2,1,2)/rhoc;
-pc = f_in(2,1,2)-rhoc*uc^2;
+rhoc = q_in(1,1,1);
+uc = q_in(1,1,2)/rhoc;
+pc = f_in(1,1,2)-rhoc*uc^2;
 cc = sqrt(user_Gamma*pc/rhoc);
 R_pos = uc+2*cc/(user_Gamma-1);
 

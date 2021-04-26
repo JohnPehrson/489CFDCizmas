@@ -9,24 +9,39 @@ function [switch2out] = switch2(v2,p5by5,type,face)
         %be p(i+2,j),p(i+1,j),p(i,j),p(i-1,j), p(i-2,j)
     %P(1) should be the largest value, such as P(i+2,j) for a centered case
 
+    i = 3;
+    j = 3;
+    p = p5by5;
+    
     switch type
         case 'xi'
-            p = p5by5(3,:);
+            %calculate s(2)xi
+            s2xicentral = v2*abs(p(i+1,j)-2*p(i,j)+p(i-1,j))/(p(i+1,j)+2*p(i,j)+p(i-1,j));
             switch face
                 case 'E'
-                	switch2out = 0.5*(v2*(abs((p(2)-2*p(3)+p(4)))/(p(2)+2*p(3)+p(4)))+v2*(abs((p(3)-2*p(4)+p(5)))/(p(3)+2*p(4)+p(5))));
+                    i = i+1;
+                    s2xiadj = v2*abs(p(i+1,j)-2*p(i,j)+p(i-1,j))/(p(i+1,j)+2*p(i,j)+p(i-1,j));
+                    switch2out = 0.5*(s2xicentral+s2xiadj);
                 case 'W'
-                    switch2out = 0.5*(v2*(abs((p(2)-2*p(3)+p(4)))/(p(2)+2*p(3)+p(4)))+v2*(abs((p(1)-2*p(2)+p(3)))/(p(1)+2*p(2)+p(3))));
+                    i = i-1;
+                    s2xiadj = v2*abs(p(i+1,j)-2*p(i,j)+p(i-1,j))/(p(i+1,j)+2*p(i,j)+p(i-1,j));
+                    switch2out = 0.5*(s2xicentral+s2xiadj);
             end
         case 'n'
-            p = p5by5(:,3);
+            %calculate s(2)n
+            s2ncentral = v2*abs(p(i,j+1)-2*p(i,j)+p(i-1,j))/(p(i+1,j)+2*p(i,j)+p(i-1,j));
             switch face
                 case 'N'
-                    switch2out = 0.5*(v2*(abs((p(2)-2*p(3)+p(4)))/(p(2)+2*p(3)+p(4)))+v2*(abs((p(3)-2*p(4)+p(5)))/(p(3)+2*p(4)+p(5))));
+                    j = j+1;
+                    s2nadj = v2*abs(p(i,j+1)-2*p(i,j)+p(i-1,j))/(p(i+1,j)+2*p(i,j)+p(i-1,j));
+                    switch2out = 0.5*(s2ncentral+s2nadj);
                 case 'S'
-                    switch2out = 0.5*(v2*(abs((p(2)-2*p(3)+p(4)))/(p(2)+2*p(3)+p(4)))+v2*(abs((p(1)-2*p(2)+p(3)))/(p(1)+2*p(2)+p(3))));
+                    j = j-1;
+                    s2nadj = v2*abs(p(i,j+1)-2*p(i,j)+p(i-1,j))/(p(i+1,j)+2*p(i,j)+p(i-1,j));
+                    switch2out = 0.5*(s2ncentral+s2nadj);
             end
     end
+    
     
 end
 
