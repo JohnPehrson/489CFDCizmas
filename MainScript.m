@@ -15,8 +15,8 @@ clear all;close all;clc;
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
-user_MeshQual = 'coarse';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
-user_itmax = 500;            %maximum number of iterations made when solving
+user_MeshQual = 'test';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
+user_itmax = 50;            %maximum number of iterations made when solving
 user_tol = 0.000005;        %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
@@ -190,7 +190,7 @@ end
 %% Report Data
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq);
+exportDataTecplot(user_Mach,user_MeshQual,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq);
 
 %% Plot Residuals and bump force
 figure;

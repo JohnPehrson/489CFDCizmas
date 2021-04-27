@@ -1,11 +1,11 @@
-function exportDataTecplot(user_Mach,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq)
+function exportDataTecplot(user_Mach,user_MeshQual,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq)
 %This function takes the final results of the program and writes it to a
 %text file that can be imported into tecPlot to visualize the data
 
 
 %find and open the data file
 newmach = erase(num2str(user_Mach),'.');
-filetitle = ['Pehrson_P2_' newmach '_' num2str(iterations-1) '.txt'];
+filetitle = ['Pehrson_P2_' newmach '_' user_MeshQual '_' num2str(iterations-1) '.txt'];
 fileID = fopen(filetitle,'w');
 
 
