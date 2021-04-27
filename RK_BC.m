@@ -1,4 +1,4 @@
-function [f_cNESW_out,g_cNESW_out] = RK_BC(user_Gamma,user_Mach,user_alpha,P_static,ind1,ind2,q_cell,f_cNESW,g_cNESW,x_abcd,y_abcd)
+function [f_cNESW_out,g_cNESW_out] = RK_BC(user_Gamma,user_Mach,user_alpha,P_static,ind1,ind2,q_cell,f_cNESW,g_cNESW,x_abcd,y_abcd,q_cell_left)
 %This function will modify the fluxes near the cell in the RK loop (during
 %the pseudo-time-stepping) to obey the boundary conditions it may have.
    
@@ -13,7 +13,7 @@ function [f_cNESW_out,g_cNESW_out] = RK_BC(user_Gamma,user_Mach,user_alpha,P_sta
     %% Logic for BC
     switch ind1
         case 'E' %outlet BC
-            [f_cNESW_out(3,:) ,g_cNESW_out(3,:)] = RK_outletBC(user_Gamma,user_Mach,P_static,q_cell,f_cNESW(1,:),g_cNESW(1,:));
+            [f_cNESW_out(3,:) ,g_cNESW_out(3,:)] = RK_outletBC(user_Gamma,user_Mach,P_static,q_cell,f_cNESW(1,:),g_cNESW(1,:),f_cNESW(5,:),g_cNESW(5,:));
             f_cNESW_out(5,:) = f_cNESW(5,:);
             g_cNESW_out(5,:) = g_cNESW(5,:);
         case 'W' %inlet BC
