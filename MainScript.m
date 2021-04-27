@@ -15,13 +15,14 @@ clear all;close all;clc;
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
-user_MeshQual = 'test';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
-user_itmax = 50;            %maximum number of iterations made when solving
+user_MeshQual = 'coarse';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
+user_itmax = 20;            %maximum number of iterations made when solving
 user_tol = 0.000005;        %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
 CFL = 1.25;                  %0.5 recommended from Cizmas
 report_freq = 1;            %the frequency with which data is exported and plotted. Only for output
+plot_full = 0;              %1 if visualize the ghost cells, 0 to not visualize ghost cells
 
 
 %% Input and modify the grid
@@ -190,28 +191,28 @@ end
 %% Report Data
 
 %Format and export data to visualize in TecPlot
-exportDataTecplot(user_Mach,user_MeshQual,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq);
+exportDataTecplot(user_Mach,user_MeshQual,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq,plot_full);
 
 %% Plot Residuals and bump force
 figure;
 for i = 1:4
-plot(1:report_freq:user_itmax,meanresidual(i,1:report_freq:user_itmax),'Linewidth',2);
+plot(1:report_freq:user_itmax,log10(meanresidual(i,1:report_freq:user_itmax)),'Linewidth',2);
 hold on;
 end
 title('Mean Residuals');
 legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
 xlabel('Iteration #');
-ylabel('Mean Residual');
+ylabel('Log Base 10 of Mean Residual');
 
 figure;
 for i = 1:4
-plot(1:report_freq:user_itmax,maxresidual(i,1:report_freq:user_itmax),'Linewidth',2);
+plot(1:report_freq:user_itmax,log10(maxresidual(i,1:report_freq:user_itmax)),'Linewidth',2);
 hold on;
 end
 title('Max Residuals');
 legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
 xlabel('Iteration #');
-ylabel('Max Residual');
+ylabel('Log Base 10 of Max Residual');
 
 figure;
 yyaxis left;
