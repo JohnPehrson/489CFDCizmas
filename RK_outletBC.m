@@ -5,6 +5,7 @@ function [f_gc,g_gc] = RK_outletBC(user_Gamma,user_Mach,P_static,q_in,f_in,g_in)
 
 %% R- is cells, R+ is infinity
 
+
 %R-
 uinf = user_Mach;
 rhoinf = 1;

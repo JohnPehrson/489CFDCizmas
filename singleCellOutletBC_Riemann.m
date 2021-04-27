@@ -12,6 +12,7 @@ function [q_out,f_out,g_out] = singleCellOutletBC_Riemann(user_Gamma,user_Mach,q
 
 %% R- is cells, R+ is infinity
 
+%old
 %R-
 uinf = user_Mach;
 rhoinf = 1;
@@ -33,7 +34,7 @@ cb = 0.25*(user_Gamma-1)*(R_pos-R_neg);
 %calculate other stuff
 sb = (cc^2)/(user_Gamma*(rhoc)^(user_Gamma-1)); %for outflow
 rhob = ((cb^2)/(user_Gamma*sb))^((1)/(user_Gamma-1));
-pb = rhob*cb^2/user_Gamma;
+pb = (rhob*cb^2)/user_Gamma;
 
 %getting everything in the right format
 %rhob
