@@ -12,11 +12,11 @@ clear all;close all;clc;
 %handed off to TecPlot via a .txt file. 
 
 %% User-Defined Variables
-user_Mach = 0.9;            %choose either 0.3, 0.6, or 0.9
+user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
-user_MeshQual = 'fine';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
-user_itmax = 3000;            %maximum number of iterations made when solving
+user_MeshQual = 'coarse';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
+user_itmax = 3;            %maximum number of iterations made when solving
 user_tol = 0.0000005;        %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
@@ -74,6 +74,11 @@ plot_cells_c = plot_cells_pressure;
 %Set up 2d matrix for bump force over time
 plot_bump_force = NaN(1+user_itmax,2); % (:,1) is x, (:,2) is y
 
+% Set up frozen variables for the loop iterations prior to RK
+qfreeze_Mat = cells_q;
+Dfreeze_Mat = cells_q;
+dt_Mat = zeros(cells_Imax,cells_Jmax);
+R_rk = zeros(cells_Imax,cells_Jmax,4);
 
 %% Grid Initialization
 
@@ -116,45 +121,63 @@ plot_i = 2;
 
  %Define some preliminary variables/constants for the while loop
  iterations = 1;
- residual_it = 1; %just to get the loop going
  a_rk = [1/4,1/3,1/2,1]; %for rk loop
  
- while (iterations<(user_itmax+1)) && (residual_it>user_tol) %while loop that iterates the solution in time
+ while (iterations<(user_itmax+1)) %while loop that iterates the solution in time
     waitbar(iterations/user_itmax,fwait,'Iterating');
      
-    residualmax = 0;
-    for j = 3:(cells_Jmax-2) %loop through the interior cells in the grid
+    %loops through cells for the frozen data
+    for j = 3:(cells_Jmax-2)
         for i = 3:(cells_Imax-2)
             %freeze a q
-                q_freeze = squeeze(cells_q(i,j,:));
+                qfreeze_Mat(i,j,:) = squeeze(cells_q(i,j,:));
             %calculate and freeze a D
                 [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
                 q5by5 = cells_q((i-2):(i+2),(j-2):(j+2),:);
                 p5by5 = cells_pressure((i-2):(i+2),(j-2):(j+2));
                 eig3by3 = cells_eig((i-1):(i+1),(j-1):(j+1),:);
-                D_freeze = Dis(v2,v4,user_Gamma,x_abcd,y_abcd,q5by5,p5by5,eig3by3);           
+                Dfreeze_Mat(i,j,:) = Dis(v2,v4,user_Gamma,x_abcd,y_abcd,q5by5,p5by5,eig3by3);           
                     %save dissipation for visualization
-                    plot_cells_dissipation(plot_i,i,j,:) = D_freeze;
+                    plot_cells_dissipation(plot_i,i,j,:) = Dfreeze_Mat(i,j,:);
             %grab the cell area
                 A_cell = A(i,j);
             %get the delta_t
-                dt = time_step(CFL,A_cell,x_abcd,y_abcd,eig3by3);
-            %calculate f and g into the rk timestep thing
-                 f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
-                 g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);                     
-            
-            %cell is near boundary indicators?
-                [ind1,ind2] = cellnearboundarychecker(i,j,cells_Imax,cells_Jmax);
-                 
-            %Runge-Kutta Temporal Incrementing
-                [cells_q(i,j,:),cells_f(i,j,:),cells_g(i,j,:),Residual(i,j,:)] = RK_time_step(user_Gamma,user_Mach,user_alpha,P_static,a_rk,q_freeze,D_freeze,A_cell,dt,x_abcd,y_abcd,f_cNESW,g_cNESW,ind1,ind2,cells_Imax,cells_Jmax);
+                dt_Mat(i,j) = time_step(CFL,A_cell,x_abcd,y_abcd,eig3by3);
+        end
+    end
+
+    %replacement RK loop
+    for k = 1:4 %loops through 4 rk steps
         
+        for j = 3:(cells_Jmax-2) %loop through cells
+            for i = 3:(cells_Imax-2)
+                %pseudo step a single cell (find residual then find the
+                %pseudo step q
+                f_cNESW = squeeze([cells_f(i,j,:);cells_f(i,j+1,:);cells_f(i+1,j,:);cells_f(i,j-1,:);cells_f(i-1,j,:)]);
+                g_cNESW = squeeze([cells_g(i,j,:);cells_g(i,j+1,:);cells_g(i+1,j,:);cells_g(i,j-1,:);cells_g(i-1,j,:)]);
+                R_rk(i,j,:) = findResidual(x_abcd,y_abcd,f_cNESW,g_cNESW);
+                cells_q(i,j,:) = qfreeze_Mat(i,j,:)-a_rk(k)*(dt_Mat(i,j)/A(i,j))*(R_rk(i,j,:)-Dfreeze_Mat(i,j,:));
+                
+                %update the f and g matrix?
+                [cells_f(i,j,:),cells_g(i,j,:)] = refresh_f_g(cells_q(i,j,:),user_Gamma);
+            end
+        end
+        
+        %apply BC after q is updated
+        [cells_q,cells_f,cells_g] = applyBC(nodes_x,nodes_y,user_alpha,user_Gamma,user_Mach,P_static,cells_q,cells_f,cells_g,cells_Imax,cells_Jmax);
+    end
+    Residual = R_rk;
+    
+    
+    %loops through cells to update p, c, eigenvalues (which aren't used
+    %again until the next iteration
+    for j = 3:(cells_Jmax-2)
+        for i = 3:(cells_Imax-2)
             %update the eigenvalues, pressure, and c for the cell
             cells_pressure(i,j) = cells_f(i,j,2)-(cells_q(i,j,2)^2)/cells_q(i,j,1);
             cells_c(i,j) = sqrt(user_Gamma*cells_pressure(i,j)/cells_q(i,j,1));
             [x_abcd,y_abcd] = nodes_touch_cell(i,j,nodes_x,nodes_y);
             cells_eig(i,j,:) = eigenvaluefinder(x_abcd,y_abcd,cells_q(i,j,:),cells_c(i,j));
-                   
         end
     end
     
@@ -203,7 +226,7 @@ plot(1:report_freq:user_itmax,log10(meanresidual(i,1:report_freq:user_itmax)),'L
 hold on;
 end
 title('Mean Residuals');
-legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
+legend('R rho','R rho*u','R rho*v','R rho*E');
 xlabel('Iteration #');
 ylabel('Log Base 10 of Mean Residual');
 
@@ -213,7 +236,7 @@ plot(1:report_freq:user_itmax,log10(maxresidual(i,1:report_freq:user_itmax)),'Li
 hold on;
 end
 title('Max Residuals');
-legend('Res_rho','Res_rho*u','Res_rho*v','Res_rho*E');
+legend('R rho','R rho*u','R rho*v','R rho*E');
 xlabel('Iteration #');
 ylabel('Log Base 10 of Max Residual');
 
