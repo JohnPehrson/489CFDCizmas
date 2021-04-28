@@ -15,17 +15,18 @@ clear all;close all;clc;
 user_Mach = 0.3;            %choose either 0.3, 0.6, or 0.9
 user_alpha = 0;             %direction of incoming flow into the inlet. Recommended to keep at 0. [deg]
 user_Gamma = 1.4;           %the ratio of specific heats of the gas
-user_MeshQual = 'coarse';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
-user_itmax = 20;            %maximum number of iterations made when solving
+user_MeshQual = 'fine';   %choose either coarse, medium, or fine (or test for the algebraic test grid)
+user_itmax = 1000;            %maximum number of iterations made when solving
 user_tol = 0.000005;        %acceptable nondimensional error/tolerance of the residual when solving
 v2 = 0.25;                  %[0,0.5] dissipation switch second order
 v4 = 0.004;                 %[0.0001,0.01] dissipation switch fourth order
 CFL = 1.25;                  %0.5 recommended from Cizmas
 report_freq = 1;            %the frequency with which data is exported and plotted. Only for output
-plot_full = 0;              %1 if visualize the ghost cells, 0 to not visualize ghost cells
+plot_full = 1;              %1 if visualize the ghost cells, 0 to not visualize ghost cells
 
 
 %% Input and modify the grid
+fwait = waitbar(0,'Loading and configuring data');
 %read node locations in from the specified grid, put into matraxies
 [nodes_x_input,nodes_y_input] = LoadGrid(user_MeshQual); %no ghost nodes/cells
 
@@ -119,7 +120,8 @@ plot_i = 2;
  a_rk = [1/4,1/3,1/2,1]; %for rk loop
  
  while (iterations<(user_itmax+1)) && (residual_it>user_tol) %while loop that iterates the solution in time
-
+    waitbar(iterations/user_itmax,fwait,'Iterating');
+     
     residualmax = 0;
     for j = 3:(cells_Jmax-2) %loop through the interior cells in the grid
         for i = 3:(cells_Imax-2)
@@ -190,6 +192,7 @@ end
 
 %% Report Data
 
+waitbar(1,fwait,'exporting data');
 %Format and export data to visualize in TecPlot
 exportDataTecplot(user_Mach,user_MeshQual,iterations,nodes_x,nodes_y,plot_cells_q,plot_cells_f,plot_cells_g,plot_Residual,plot_cells_pressure,plot_cells_c,plot_cells_dissipation,nodes_Imax,nodes_Jmax,cells_Imax,cells_Jmax,user_itmax,report_freq,plot_full);
 
