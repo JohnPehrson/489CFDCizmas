@@ -87,103 +87,103 @@ if plot_full == 1
             fprintf(fileID,' VARIABLES = "X", "Y", "q1", "q2", "q3", "q4","f1", "f2", "f3", "f4","g1","g2","g3","g4","r1","r2","r3","r4","d1","d2","d3","d4","Pressure","Mach","c" \n');
             fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]=CELLCENTERED)\n',IterationsName,nodes_Imax,nodes_Jmax); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
             for i = 1:nodes_Imax*nodes_Jmax
-                fprintf(fileID,'%.5g ', x(i));
+                fprintf(fileID,'%.4g ', x(i));
             end
             fprintf(fileID,'\n');
             for i = 1:nodes_Imax*nodes_Jmax
-                fprintf(fileID,'%.5g ', y(i));
+                fprintf(fileID,'%.4g ', y(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', q1(i));
+                fprintf(fileID,'%.4g ', q1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', q2(i));
+                fprintf(fileID,'%.4g ', q2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', q3(i));
+                fprintf(fileID,'%.4g ', q3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', q4(i));
+                fprintf(fileID,'%.4g ', q4(i));
             end
                     fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', f1(i));
+                fprintf(fileID,'%.4g ', f1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', f2(i));
+                fprintf(fileID,'%.4g ', f2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', f3(i));
+                fprintf(fileID,'%.4g ', f3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', f4(i));
+                fprintf(fileID,'%.4g ', f4(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', g1(i));
+                fprintf(fileID,'%.4g ', g1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', g2(i));
+                fprintf(fileID,'%.4g ', g2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', g3(i));
+                fprintf(fileID,'%.4g ', g3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', g4(i));
+                fprintf(fileID,'%.4g ', g4(i));
             end
                     fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', r1(i));
+                fprintf(fileID,'%.4g ', r1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', r2(i));
+                fprintf(fileID,'%.4g ', r2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', r3(i));
+                fprintf(fileID,'%.4g ', r3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', r4(i));
+                fprintf(fileID,'%.4g ', r4(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', d1(i));
+                fprintf(fileID,'%.4g ', d1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', d2(i));
+                fprintf(fileID,'%.4g ', d2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', d3(i));
+                fprintf(fileID,'%.4g ', d3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', d4(i));
+                fprintf(fileID,'%.4g ', d4(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', pstatic(i));
+                fprintf(fileID,'%.4g ', pstatic(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', Mach(i));
+                fprintf(fileID,'%.4g ', Mach(i));
             end
             fprintf(fileID,'\n');
             for i = 1:cells_Imax*cells_Jmax
-                fprintf(fileID,'%.5g ', c(i));
+                fprintf(fileID,'%.4g ', c(i));
             end
             fprintf(fileID,'\n');
 
@@ -267,103 +267,103 @@ else %only plot the interior cells
             fprintf(fileID,'ZONE T="%2s Iterations", I=%2g, J=%2g, DATAPACKING=BLOCK VARLOCATION=([3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]=CELLCENTERED)\n',IterationsName,(nodes_Imax-4),(nodes_Jmax-4)); %[3,4,5,6] correspond to the number of cell-centered variables, in this case qvec
           
             for i = 1:(nodes_Imax-4)*(nodes_Jmax-4)
-                fprintf(fileID,'%.5g ', x(i));
+                fprintf(fileID,'%.4g ', x(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(nodes_Imax-4)*(nodes_Jmax-4)
-                fprintf(fileID,'%.5g ', y(i));
+                fprintf(fileID,'%.4g ', y(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', q1(i));
+                fprintf(fileID,'%.4g ', q1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', q2(i));
+                fprintf(fileID,'%.4g ', q2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', q3(i));
+                fprintf(fileID,'%.4g ', q3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', q4(i));
+                fprintf(fileID,'%.4g ', q4(i));
             end
                     fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', f1(i));
+                fprintf(fileID,'%.4g ', f1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', f2(i));
+                fprintf(fileID,'%.4g ', f2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', f3(i));
+                fprintf(fileID,'%.4g ', f3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', f4(i));
+                fprintf(fileID,'%.4g ', f4(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', g1(i));
+                fprintf(fileID,'%.4g ', g1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', g2(i));
+                fprintf(fileID,'%.4g ', g2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', g3(i));
+                fprintf(fileID,'%.4g ', g3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', g4(i));
+                fprintf(fileID,'%.4g ', g4(i));
             end
                     fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', r1(i));
+                fprintf(fileID,'%.4g ', r1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', r2(i));
+                fprintf(fileID,'%.4g ', r2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', r3(i));
+                fprintf(fileID,'%.4g ', r3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', r4(i));
+                fprintf(fileID,'%.4g ', r4(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', d1(i));
+                fprintf(fileID,'%.4g ', d1(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', d2(i));
+                fprintf(fileID,'%.4g ', d2(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', d3(i));
+                fprintf(fileID,'%.4g ', d3(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', d4(i));
+                fprintf(fileID,'%.4g ', d4(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', pstatic(i));
+                fprintf(fileID,'%.4g ', pstatic(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', Mach(i));
+                fprintf(fileID,'%.4g ', Mach(i));
             end
             fprintf(fileID,'\n');
             for i = 1:(cells_Imax-4)*(cells_Jmax-4)
-                fprintf(fileID,'%.5g ', c(i));
+                fprintf(fileID,'%.4g ', c(i));
             end
             fprintf(fileID,'\n');
 
