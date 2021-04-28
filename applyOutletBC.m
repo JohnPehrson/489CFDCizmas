@@ -8,14 +8,13 @@ function [cells_q,cells_f,cells_g] = applyOutletBC(user_Gamma,user_Mach,cells_q,
 %epsilon = rho*E is defined using the static pressure, m,n
 
 %reference indexes for grid cells and ghost cells
-i_g = (cells_Imax-2);
+i_g = (cells_Imax-3):(cells_Imax-2);
 i_gc = (cells_Imax-1):cells_Imax;
 
 %loop through vertical cells at the outlet
     for j = 3:(cells_Jmax-2) 
-        [cells_q(i_gc,j,:),cells_f(i_gc,j,:),cells_g(i_gc,j,:)] = singleCellOutletBC_Riemann(user_Gamma,user_Mach,cells_q(i_g,j,:),cells_f(i_g,j,:),cells_g(i_g,j,:),P_static);
+        [cells_q(i_gc,j,:),cells_f(i_gc,j,:),cells_g(i_gc,j,:)] = singleCellOutletBC(user_Gamma,user_Mach,cells_q(i_g,j,:),cells_f(i_g,j,:),cells_g(i_g,j,:),P_static);
     end
-
 
 end
 

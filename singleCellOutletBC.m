@@ -1,4 +1,4 @@
-function [q_out,f_out,g_out] = singleCellOutletBC(user_Gamma,q_in,f_in,g_in,P_static)
+function [q_out,f_out,g_out] = singleCellOutletBC(user_Gamma,user_Mach,q_in,f_in,g_in,P_static)
 %This function sets the outlet boundary conditons in a single cell. Used in
 %"applyOutletBC".
 
@@ -19,8 +19,12 @@ m(3) = 2*m(2)-m(1);
 n(3) = 2*n(2)-n(1);
 
 %calculate new epsilon for ghost cells
-epsilon = (P_static)/(user_Gamma-1)+0.5*(m(3)^2+n(3)^2)/(rho(3));
-E = epsilon/rho(3);
+u = m(3)/rho(3);
+v = n(3)/rho(3);
+
+
+% epsilon = (P_static)/(user_Gamma-1)+0.5*(u^2+v^2)*(rho(3));
+E = (P_static)/((user_Gamma-1)*rho(3))+0.5*(u^2+v^2);
 
 %make single vectors
 q_out1cell = [rho(3),m(3),n(3),rho(3)*E];
